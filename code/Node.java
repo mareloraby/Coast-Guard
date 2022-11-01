@@ -1,6 +1,12 @@
 package code;
 public class Node {
 
+
+    // state
+    // actionTakenToReachThisNode
+    // parent
+    // depth
+
     public Node() {
 
     }
@@ -9,3 +15,4 @@ public class Node {
     }
 
 }
+
