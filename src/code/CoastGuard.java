@@ -16,12 +16,10 @@ class CoastGuard extends SearchProblem{
     // number of passengers in each ship
     public static byte [] numOfPassengers; // i
     // locations of ships
-    public static byte [] shipsLocations; // size = (# of ships * 2) + 1
-    // 2i 2i+1 where i is the index in numOfPassengers
+    public static byte [] shipsLocations; // size = (# of ships * 2) + 1 // 2i 2i+1 where i is the index in numOfPassengers
 
     // locations of stations
     public static byte [] stationsLocations;
-
 
     private static ArrayList<Integer> emptyCells;
 
@@ -166,15 +164,20 @@ stations generated as long as no 2 objects occupy the same cell.*/
         }
 
     }
+
     private static String solve( String grid, String strategy,  boolean visualize ){
 
+        String searchResult = solveSearchProblem(grid,strategy);
 
-        return "";
+        if(visualize){
+            // visualize steps
+
+        }
+
+        return searchResult;
 
 
     }
-
-
 
     private static int random(int start,int end) {
         return start   +  (int)( Math.random() * (end-start+1) );

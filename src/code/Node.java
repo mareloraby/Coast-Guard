@@ -13,7 +13,12 @@ public class Node {
      * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1
      * Location of all wrecks and each box's current damage: wrX1, wrfY1, wrD1
 
-     remCapacity; location of coast guard; location of stations; location of ships;$
+     * Remaining Passengers Counter
+     * Remaining Ships Counter
+     * Remaining Boxes Counter
+
+
+     remCapacity; location of coast guard; location of stations; location of ships;$;0;0;0
      $: no wrecks
 
      */
