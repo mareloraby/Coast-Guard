@@ -1,27 +1,31 @@
+package code;
+
 import java.util.ArrayList;
 
 class CoastGuard extends SearchProblem{
 
     // dimensions of Grid
-    public byte height, width;
+    public static byte height;
+    public static byte width;
 
-    public byte boatCapacity; //30 <= boatCapacity <= 100
+    public static byte boatCapacity; //30 <= boatCapacity <= 100
 
     // location of the coast guard
-    public byte coastGr,coastGc;
+    public static byte coastGr,coastGc;
 
     // number of passengers in each ship
-    public byte [] numOfPassengers; // i
+    public static byte [] numOfPassengers; // i
     // locations of ships
-    public byte [] shipsLocations; // size = (# of ships * 2) + 1
+    public static byte [] shipsLocations; // size = (# of ships * 2) + 1
     // 2i 2i+1 where i is the index in numOfPassengers
 
     // locations of stations
-    public byte [] stationsLocations;
+    public static byte [] stationsLocations;
+
 
     private static ArrayList<Integer> emptyCells;
 
-    public String genGrid(){
+    public static String genGrid(){
 
         /*randomly generates a grid. The dimensions of the grid, the locations of
 the coast guard, stations, ships, number of passengers for each ship and the coast
@@ -111,6 +115,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
     public void visualizeGrid(String grid){
 
         String [] gridArray = grid.split(";");
+
         String [] dimensions = gridArray[0].split(",");
 
         int width = Integer.parseInt(dimensions[0]);
@@ -161,11 +166,19 @@ stations generated as long as no 2 objects occupy the same cell.*/
         }
 
     }
+    private static String solve( String grid, String strategy,  boolean visualize ){
+
+
+        return "";
+
+
+    }
+
+
 
     private static int random(int start,int end) {
         return start   +  (int)( Math.random() * (end-start+1) );
     }
-
     private static int randomCell() {
         int cellIndex = random(0,emptyCells.size()-1);
         int cell = emptyCells.get(cellIndex);
