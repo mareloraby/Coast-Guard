@@ -1,4 +1,3 @@
-package code;
 public class Node {
 
 
@@ -6,8 +5,10 @@ public class Node {
     // actionTakenToReachThisNode
     // parent
     // depth
+    // cost
 
     public Node() {
+
 
     }
 

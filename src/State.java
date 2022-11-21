@@ -1,6 +1,6 @@
-package code;
 public class State{
 
+// state of the world
 
 //    short agentX, agentY;
 //    short remainingCapacity;
@@ -12,6 +12,10 @@ public class State{
 
 
     State(){
+
+    }
+
+    public static void main(String[] args) {
 
     }
 
