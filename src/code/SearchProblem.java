@@ -11,7 +11,12 @@ public class SearchProblem{
     public static int gridW,gridH;
     public static int maxCapacity;
     public static int expandedNodes = 0;
+    public static int coastGuardX;
+    public static int coastGuardY;
 
+    public static int totalPassengers = 0;
+    public static int totalShips;
+    public static int totalWrecks = 0;
     public static String initialState;
 
     public static HashSet<String> prevStates;
@@ -31,9 +36,34 @@ public class SearchProblem{
         gridH = Integer.parseInt(dims[1]);
 
         // Capacity
+        maxCapacity = Integer.parseInt(parsedGrid[1]);
+
+        //coast guard location
+        String [] coastGuardLocation = parsedGrid[2].split(",");
+        coastGuardX = Integer.parseInt(coastGuardLocation[0]);
+        coastGuardY = Integer.parseInt(coastGuardLocation[1]);
+
+        //stations locations
+        String stationsLocations = parsedGrid[3];
+
+        //ships locations
+        String shipsLocationsandPassengers = parsedGrid[4];
+
+        //number of ships
+        totalShips = shipsLocationsandPassengers.length()/3;
+
+        //number of passengers
+        int i = 2;
+        String [] parsedShips = shipsLocationsandPassengers.split(",");
+        while(i<shipsLocationsandPassengers.length()){
+            totalPassengers += Integer.parseInt(parsedShips[i]);
+            i+=3;
+        }
 
 
-        initialState = parsedGrid[1]+"$";
+
+        initialState = maxCapacity + ";" + coastGuardX + "," + coastGuardY + ";" + stationsLocations + ";" +
+                       shipsLocationsandPassengers + ";" + "$" + ";" + totalPassengers + ";" + totalShips + ";" + 0;
         prevStates = new HashSet<String>();
         prevStates.add(initialState);
 
