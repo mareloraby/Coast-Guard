@@ -9,8 +9,11 @@ public class SearchProblem{
 
 
     public static int gridW,gridH;
+
     public static int maxCapacity;
+
     public static int expandedNodes = 0;
+
     public static int coastGuardX;
     public static int coastGuardY;
 
@@ -47,23 +50,23 @@ public class SearchProblem{
         String stationsLocations = parsedGrid[3];
 
         //ships locations
-        String shipsLocationsandPassengers = parsedGrid[4];
+        String shipsLocationsAndPassengers = parsedGrid[4];
 
         //number of ships
-        totalShips = shipsLocationsandPassengers.length()/3;
+        totalShips = shipsLocationsAndPassengers.length()/3;
 
         //number of passengers
         int i = 2;
-        String [] parsedShips = shipsLocationsandPassengers.split(",");
-        while(i<shipsLocationsandPassengers.length()){
+        String [] parsedShips = shipsLocationsAndPassengers.split(",");
+        while(i<shipsLocationsAndPassengers.length()){
             totalPassengers += Integer.parseInt(parsedShips[i]);
             i+=3;
         }
 
 
 
-        initialState = maxCapacity + ";" + coastGuardX + "," + coastGuardY + ";" + stationsLocations + ";" +
-                       shipsLocationsandPassengers + ";" + "$" + ";" + totalPassengers + ";" + totalShips + ";" + 0;
+        initialState = gridW + ";" + gridH + ";"+ maxCapacity + ";" + coastGuardX + "," + coastGuardY + ";" + stationsLocations + ";" +
+                       shipsLocationsAndPassengers + ";" + "$" + ";" + maxCapacity+ ";" + totalPassengers + ";" + totalShips + ";" + 0 + ";" + 0 + ";" + 0 ;
         prevStates = new HashSet<String>();
         prevStates.add(initialState);
 
@@ -90,6 +93,7 @@ public class SearchProblem{
 
     public static String BF(){
         String result = "";
+        
         while(!BFQueue.isEmpty()){
 
             Node currentNode = BFQueue.poll();
@@ -107,23 +111,6 @@ public class SearchProblem{
             DROP,
             RETRIEVE
             */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         }
         return result;
