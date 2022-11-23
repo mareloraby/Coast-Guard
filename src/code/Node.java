@@ -263,6 +263,22 @@ public class Node {
         return nextState;
     }
 
+    public String getAncestors(){
+        String res = "";
+        Node n = this;
+        while(n.parent!=null){
+            if(res.equals("")){
+                res = n.actionTaken + "";
+            }
+            else{
+                res = n.actionTaken + "," + res;
+            }
+            n = n.parent;
+        }
+        return res;
+    }
+
+
 
 
 }
