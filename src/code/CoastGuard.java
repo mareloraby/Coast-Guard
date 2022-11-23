@@ -1,28 +1,130 @@
 package code;
 
-import java.util.ArrayList;
+import java.util.*;
 
 class CoastGuard extends SearchProblem{
 
-    // dimensions of Grid
-    public static byte height;
-    public static byte width;
+    int numExpandedNodes;
+    public static Queue<Node> BFQueue;
+    public static Stack<Node> DFQueue;
 
-    public static byte boatCapacity; //30 <= boatCapacity <= 100
 
-    // location of the coast guard
-    public static byte coastGr,coastGc;
 
-    // number of passengers in each ship
-    public static byte [] numOfPassengers; // i
-    // locations of ships
-    public static byte [] shipsLocations; // size = (# of ships * 2) + 1 // 2i 2i+1 where i is the index in numOfPassengers
+    public String solveSearchProblem(String grid, String strategy ){
 
-    // locations of stations
-    public static byte [] stationsLocations;
+        // create initialState and root node from input grid
+        String initialState = createInitialState(grid);
+        Node rootNode = new Node(initialState,null,"0,0",null,0);
+
+        // counter for expanded nodes
+        numExpandedNodes = 0;
+
+        // implement search based on strategy
+        switch(strategy){
+            case "BF":
+                BFQueue = new LinkedList<Node>();
+                BFQueue.add(rootNode);
+                return BF();
+            case "DF":
+                DFQueue = new Stack<Node>();
+                DFQueue.add(rootNode);
+                return DF();
+            case "ID":;
+            case "GR1":;
+            case "GR2":;
+            case "AS1":;
+            case "AS2":;
+        }
+
+        return "";
+    }
+
+    public String createInitialState(String grid){
+
+        /*
+         * Grid dimensions index 0
+         * Max capacity  index 1
+         * Current Coast Guard Location index 2
+         * Locations of all Stations  index 3
+         * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
+         * Location of all wrecks and each box's current damage: wrX1, wrfY1, wrD1  index 5
+         * Remaining Coast Guard Capacity  index 6
+         * Remaining Passengers Counter  index 7
+         * Remaining Ships Counter  index 8
+         * Remaining Boxes Counter  index 9
+         * Dead passengers  index 10
+         * Retrieved boxes  index 11
+         */
+
+        String [] parsedGrid =  grid.split(";");
+
+        //    * Grid dimensions index 0
+        //    * Max capacity  index 1
+        //    * Current Coast Guard Location index 2
+        //    * Locations of all Stations  index 3
+        //    * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
+
+        String [] shipsLocations = parsedGrid[4].split(",");
+
+        //    * Location of all wrecks and each box's current damage: wrX1, wrfY1, wrD1  index 5
+        //    * Remaining Coast Guard Capacity  index 6
+        //    * Remaining Passengers Counter  index 7
+
+        int totalPassengers = 0;
+        int i = 2;
+
+        while(i<shipsLocations.length){
+            totalPassengers += Integer.parseInt(shipsLocations[i]);
+            i+=3;
+        }
+
+        //    * Remaining Ships Counter  index 8
+
+        int totalShips = (shipsLocations.length)/3;
+
+        //    * Remaining Boxes Counter  index 9
+        //    * Dead passengers  index 10
+        //    * Retrieved boxes  index 11
+
+        String initialState = grid+";$;"+parsedGrid[1]+";"+totalPassengers+";"+totalShips+";"+0+";"+0+";"+0;
+        return initialState;
+    }
+
+     public boolean isGoal(Node n){
+
+         /*
+             You reach your goal when there are no living passengers who are not rescued,
+           there are no undamaged boxes which have not been retrieved, and the rescue boat is not
+           carrying any passengers.
+
+             * Remaining Coast Guard Capacity  index 6 (*)
+             * Remaining Passengers Counter  index 7 (*)
+             * Remaining Ships Counter  index 8
+             * Remaining Boxes Counter  index 9 (*)
+             * Dead passengers  index 10
+             * Retrieved boxes  index 11
+         */
+
+         String currState = n.currentState;
+         String [] currStateArr = currState.split(";");
+
+         byte maxCapacity = Byte.parseByte(currStateArr[1]);
+         byte remainingCapacity = Byte.parseByte(currStateArr[6]);
+         int remainingPassengersOnGrid = Integer.parseInt(currStateArr[7]);
+         byte remainingBoxesNotRetrieved = Byte.parseByte(currStateArr[9]);
+
+         if((remainingCapacity == maxCapacity ) &&
+                 (remainingPassengersOnGrid == 0) &&
+                 (remainingBoxesNotRetrieved == 0) ){
+
+             return true;
+         }
+
+         // not goal
+         return false;
+     }
 
     private static ArrayList<Integer> emptyCells;
-
     public static String genGrid(){
 
         /*randomly generates a grid. The dimensions of the grid, the locations of
@@ -33,31 +135,33 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
 
         // grid of cells where 5 < m; n < 15
-        height = (byte)random(5,15);
-        width = (byte)random(5,15);
+        byte height = (byte)random(5,15);
+        byte width = (byte)random(5,15);
         String[][] grid = new String[height][width];
 
         emptyCells = new ArrayList<Integer>(height*width);
         for(int i=0;i<height*width;i++)
             emptyCells.add(i);
 
-        // boat capacity
-        boatCapacity = (byte)random(30,100);
+        // coast guard's boat capacity 30 <= boatCapacity <= 100
+        byte boatCapacity = (byte)random(30,100);
 
         // coast guard location
         int coastGuardCell = randomCell();
-        coastGr = (byte) (coastGuardCell/width); // get height
-        coastGc = (byte) (coastGuardCell%width); // get width
+        byte coastGr = (byte) (coastGuardCell/width); // get height
+        byte coastGc = (byte) (coastGuardCell%width); // get width
 
         grid[coastGr][coastGc] = "cg";
-
 
         // ships and number of passengers
         int maxShipsCount =  (emptyCells.size()-1);
         int shipsCount = random(1,maxShipsCount);
 
-        numOfPassengers = new byte[shipsCount];
-        shipsLocations = new byte[shipsCount*2 + 1];
+        // number of passengers in each ship
+        byte [] numOfPassengers = new byte[shipsCount];
+
+        // locations of ships: size = (# of ships * 2) + 1  & 2i 2i+1 where i is the index in numOfPassengers
+        byte [] shipsLocations = new byte[shipsCount*2 + 1];
 
         for(int i = 0; i< shipsCount; i++){
 
@@ -76,7 +180,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
         int maxStationCount = (emptyCells.size());
         int stationsCount = random(1,maxStationCount);
 
-        stationsLocations = new byte[2*stationsCount + 1];
+        byte [] stationsLocations = new byte[2*stationsCount + 1];
 
         for(int i = 0; i< stationsCount; i++){
 
@@ -110,6 +214,20 @@ stations generated as long as no 2 objects occupy the same cell.*/
         return gridString.toString();
 
     }
+
+    private static int random(int start,int end) {
+        return start   +  (int)( Math.random() * (end-start+1) );
+    }
+
+    private static int randomCell() {
+        int cellIndex = random(0,emptyCells.size()-1);
+        int cell = emptyCells.get(cellIndex);
+
+        emptyCells.remove(cellIndex);
+
+        return cell;
+    }
+
     public void visualizeGrid(String grid){
 
         String [] gridArray = grid.split(";");
@@ -165,36 +283,275 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
     }
 
-    private static String solve( String grid, String strategy,  boolean visualize ){
+    private String solve( String grid, String strategy,  boolean visualize ){
 
         String searchResult = solveSearchProblem(grid,strategy);
-
         if(visualize){
+
             // visualize steps
 
         }
-
         return searchResult;
-
-
     }
 
-    private static int random(int start,int end) {
-        return start   +  (int)( Math.random() * (end-start+1) );
+    public static HashSet<String> prevStates = new HashSet<String>();
+    public static ArrayList<Node> expandNode(Node n){
+
+        ArrayList<Node> expandedNodes = new ArrayList<Node>();
+        String currState = n.currentState;
+        Actions prevAction = n.actionTaken;
+
+        String [] currStateArr = currState.split(";");
+
+        //get grid dimensions to validate motion in 4 directions
+        String [] gridDimensions = currStateArr[0].split(",");
+        byte gridX = Byte.parseByte(gridDimensions[0]);
+        byte gridY = Byte.parseByte(gridDimensions[1]);
+
+        //get guard location to validate its actions
+        String [] coastGuardLocation = currStateArr[2].split(",");
+        byte guardX = Byte.parseByte(coastGuardLocation[0]);
+        byte guardY = Byte.parseByte(coastGuardLocation[1]);
+
+        //get stations locations for validating dropping passengers at a valid cell
+        String [] stationsLocations = currStateArr[3].split(",");
+
+        //get remaining guard boat capacity to validate picking up or dropping passengers
+        byte remainingCapacity = Byte.parseByte(currStateArr[6]);
+
+        //get boat maximum capacity
+        byte boatMaxCapacity = Byte.parseByte(currStateArr[1]);
+
+        //get ships locations and number of passengers to validate pickup action
+        String [] shipsLocations = currStateArr[4].split(",");
+
+        //get wrecks locations to validate retrieve action
+        String [] wrecksLocations = currStateArr[5].split(",");
+
+        //check validity of moving up
+        if(prevAction!=Actions.DOWN && guardY>0){
+            String nextState = n.generateNextState(currState, Actions.UP);
+            if(!(prevStates.contains(nextState))){
+                prevStates.add(nextState);
+                //get dead passengers and retrieved boxes to include them in the path cost
+                String [] nextStateArr = nextState.split(";");
+                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
+                Node newNode = new Node(nextState, n, pathCost, Actions.UP, n.depth+1);
+                expandedNodes.add(newNode);
+            }
+        }
+
+        //check validity of moving down
+        if(prevAction!=Actions.UP && guardY<gridY-1){
+            String nextState = n.generateNextState(currState, Actions.DOWN);
+            if(!(prevStates.contains(nextState))){
+                prevStates.add(nextState);
+                //get dead passengers and retrieved boxes to include them in the path cost
+                String [] nextStateArr = nextState.split(";");
+                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
+                Node newNode = new Node(nextState, n, pathCost, Actions.DOWN, n.depth+1);
+                expandedNodes.add(newNode);
+            }
+        }
+
+        //check validity of moving right
+        if(prevAction!=Actions.LEFT && guardX<gridX-1){
+            String nextState = n.generateNextState(currState, Actions.RIGHT);
+            if(!(prevStates.contains(nextState))){
+                prevStates.add(nextState);
+                //get dead passengers and retrieved boxes to include them in the path cost
+                String [] nextStateArr = nextState.split(";");
+                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
+                Node newNode = new Node(nextState, n, pathCost, Actions.RIGHT, n.depth+1);
+                expandedNodes.add(newNode);
+            }
+        }
+
+        //check validity of moving left
+        if(prevAction!=Actions.RIGHT && guardX>0){
+            String nextState = n.generateNextState(currState, Actions.LEFT);
+            if(!(prevStates.contains(nextState))){
+                prevStates.add(nextState);
+                //get dead passengers and retrieved boxes to include them in the path cost
+                String [] nextStateArr = nextState.split(";");
+                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
+                Node newNode = new Node(nextState, n, pathCost, Actions.LEFT, n.depth+1);
+                expandedNodes.add(newNode);
+            }
+        }
+
+        //check validity of dropping passengers
+        int i = 0;
+        boolean onStation = false;  //is true when the coast guard is standing in a cell containing a station
+        while(i<stationsLocations.length){
+            if(Byte.parseByte(stationsLocations[i]) == guardX && Byte.parseByte(stationsLocations[i+1]) == guardY){
+                onStation = true;
+                break;
+            }
+            i+=2;
+        }
+        if(onStation && remainingCapacity<boatMaxCapacity){ //currently on a station and I have passengers to drop
+            String nextState = n.generateNextState(currState, Actions.DROP);
+            if(!(prevStates.contains(nextState))){
+                prevStates.add(nextState);
+                //get dead passengers and retrieved boxes to include them in the path cost
+                String [] nextStateArr = nextState.split(";");
+                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
+                Node newNode = new Node(nextState, n, pathCost, Actions.DROP, n.depth+1);
+                expandedNodes.add(newNode);
+            }
+        }
+
+        //check validity of picking up passengers
+        int j = 0;
+        boolean onShip = false;  //is true when the coast guard is standing in a cell containing a ship
+        byte shipPassengers = 0;
+        while(j<shipsLocations.length && shipsLocations.length>1){
+            if(Byte.parseByte(shipsLocations[j]) == guardX && Byte.parseByte(shipsLocations[j+1]) == guardY){
+                onShip = true;
+                shipPassengers = Byte.parseByte(shipsLocations[j+2]);
+                break;
+            }
+            j+=3;
+        }
+        if(onShip && shipPassengers>1 && remainingCapacity>0  &&
+                (prevAction==Actions.UP || prevAction==Actions.DOWN || prevAction==Actions.LEFT || prevAction==Actions.RIGHT || prevAction==null)){
+            String nextState = n.generateNextState(currState, Actions.PICKUP);
+            if(!(prevStates.contains(nextState))){
+                prevStates.add(nextState);
+                //get dead passengers and retrieved boxes to include them in the path cost
+                String [] nextStateArr = nextState.split(";");
+                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
+                Node newNode = new Node(nextState, n, pathCost, Actions.PICKUP, n.depth+1);
+                expandedNodes.add(newNode);
+            }
+        }
+
+        //check validity of retrieving a box
+        int k = 0;
+        boolean onWreck = false;  //is true when the coast guard is standing in a cell containing a wreck
+        byte boxCount = 20;
+        while(k<wrecksLocations.length && wrecksLocations.length>1){
+            if(Byte.parseByte(wrecksLocations[k]) == guardX && Byte.parseByte(wrecksLocations[k+1]) == guardY){
+                onWreck = true;
+                boxCount = Byte.parseByte(wrecksLocations[k+2]);
+                break;
+            }
+            k+=3;
+        }
+        if(onWreck && boxCount<19){
+            String nextState = n.generateNextState(currState, Actions.RETRIEVE);
+            if(!(prevStates.contains(nextState))){
+                prevStates.add(nextState);
+                //get dead passengers and retrieved boxes to include them in the path cost
+                String [] nextStateArr = nextState.split(";");
+                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
+                Node newNode = new Node(nextState, n, pathCost, Actions.RETRIEVE, n.depth+1);
+                expandedNodes.add(newNode);
+            }
+        }
+
+        return expandedNodes;
     }
-    private static int randomCell() {
-        int cellIndex = random(0,emptyCells.size()-1);
-        int cell = emptyCells.get(cellIndex);
 
-        emptyCells.remove(cellIndex);
+    public String BF(){
 
-        return cell;
+        while(!BFQueue.isEmpty()){
+
+            Node currNode = BFQueue.poll();
+
+            //check if it's the goal node
+            if(isGoal(currNode)){
+                /*
+                plan;deaths;retrieved;nodes
+
+                where:
+                – plan: the sequence of actions that lead to the goal (if such a sequence exists) separated
+                by commas. For example: left,right,pickup,up,drop,down,retrieve.
+
+                – deaths: number of passengers who have died in the solution starting from the
+                initial state to the found goal state.
+
+                – retrieved: number of black boxes successfully retrieved starting from the initial
+                state to the found goal state.
+
+                – nodes: is the number of nodes chosen for expansion during the search.
+
+                 */
+
+                String [] currNodeStateArray = currNode.currentState.split(";");
+                String plan = currNode.getAncestors();
+                String deaths = currNodeStateArray[10];
+                String retrieved = currNodeStateArray[11];
+                String numExpandedNodes = "";
+
+                return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
+
+            }
+
+            // get all child nodes of the current node
+            ArrayList<Node> childrenOfNode = expandNode(currNode);
+            numExpandedNodes++;
+
+
+            //add all nodes to BFQueue
+            for (Node ni : childrenOfNode){
+                BFQueue.add(ni);
+            }
+
+        }
+
+        return "";
     }
 
-    public static void main(String[] args) {
+    public String DF(){
 
+        while(!DFQueue.isEmpty()){
 
+            Node currNode = DFQueue.pop();
+
+            //check if it's the goal node
+            if(isGoal(currNode)){
+                /*
+                plan;deaths;retrieved;nodes
+
+                where:
+                – plan: the sequence of actions that lead to the goal (if such a sequence exists) separated
+                by commas. For example: left,right,pickup,up,drop,down,retrieve.
+
+                – deaths: number of passengers who have died in the solution starting from the
+                initial state to the found goal state.
+
+                – retrieved: number of black boxes successfully retrieved starting from the initial
+                state to the found goal state.
+
+                – nodes: is the number of nodes chosen for expansion during the search.
+
+                 */
+
+                String [] currNodeStateArray = currNode.currentState.split(";");
+                String plan = currNode.getAncestors();
+                String deaths = currNodeStateArray[10];
+                String retrieved = currNodeStateArray[11];
+
+                return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
+
+            }
+
+            // get all child nodes of the current node
+            ArrayList<Node> childrenOfNode = expandNode(currNode);
+            numExpandedNodes++;
+
+            //add all nodes to Queue
+            for (Node ni : childrenOfNode){
+                DFQueue.push(ni);
+            }
+
+        }
+
+        return "";
     }
+
 
 
 }

@@ -55,7 +55,7 @@ public class Node {
         String [] parsedState = currState.split(";");
 
         //get maximum boat capacity
-        int maxCapacity = Integer.parseInt(parsedState[1]);
+        byte maxCapacity = Byte.parseByte(parsedState[1]);
 
         //get coast guard location
         String coastGuardLocation = parsedState[2];
@@ -64,7 +64,7 @@ public class Node {
         String [] shipsLocationsAndPassengers = parsedState[4].split(",");
 
         //get remaining boat capacity
-        int remainingCapacity = Integer.parseInt(parsedState[6]);
+        byte remainingCapacity = Byte.parseByte(parsedState[6]);
 
         //get remaining passengers
         int remainingPassengers = Integer.parseInt(parsedState[7]);
@@ -73,13 +73,13 @@ public class Node {
         int deadPassengers = Integer.parseInt(parsedState[10]);
 
         //get number of retrieved boxes
-        int retrievedBoxes = Integer.parseInt(parsedState[11]);
+        byte retrievedBoxes = Byte.parseByte(parsedState[11]);
 
         //get number of remaining boxes
-        int remainingBoxes = Integer.parseInt(parsedState[9]);
+        byte remainingBoxes = Byte.parseByte(parsedState[9]);
 
         //get number of remaining ships
-        int remainingShips = Integer.parseInt(parsedState[8]);
+        byte remainingShips = Byte.parseByte(parsedState[8]);
 
         //generate new ships locations and passengers count string
         String updatedShips = "";
@@ -88,10 +88,10 @@ public class Node {
         String newWrecks = ""; //string to contain newly converted wrecks from ships
         int i=2;
         while(i<shipsLocationsAndPassengers.length){
-            shipsLocationsAndPassengers[i] = (Integer.parseInt(shipsLocationsAndPassengers[i])-1) + "";
+            shipsLocationsAndPassengers[i] = (Byte.parseByte(shipsLocationsAndPassengers[i])-1) + "";
             remainingPassengers--;
             deadPassengers++;
-            if(Integer.parseInt(shipsLocationsAndPassengers[i]) == 0){  //ship will be a wreck
+            if(Byte.parseByte(shipsLocationsAndPassengers[i]) == 0){  //ship will be a wreck
                 remainingBoxes++;
                 remainingShips--;
                 if(newWrecks.equals("")){ //there was no wrecks before
@@ -133,8 +133,8 @@ public class Node {
             //increment black boxes count and remove expired ones
             int j=2;
             while (j<wreckArray.length){
-                wreckArray[j] = (Integer.parseInt(wreckArray[j])+1) + "";
-                if(Integer.parseInt(wreckArray[j])==20){ //expired box
+                wreckArray[j] = (Byte.parseByte(wreckArray[j])+1) + "";
+                if(Byte.parseByte(wreckArray[j])==20){ //expired box
                     remainingBoxes--;
                 }
                 else{ // non expired box
@@ -164,8 +164,8 @@ public class Node {
 
         //get guard current location
         String [] coastGuardLocationArr = parsedState[2].split(",");
-        int guardX = Integer.parseInt(coastGuardLocationArr[0]);
-        int guardY = Integer.parseInt(coastGuardLocationArr[1]);
+        byte guardX = Byte.parseByte(coastGuardLocationArr[0]);
+        byte guardY = Byte.parseByte(coastGuardLocationArr[1]);
         //formulate next state according to the action
         switch (nextAction){
             case UP:
@@ -195,8 +195,8 @@ public class Node {
                 int k=0;
                 String tempShips = "";
                 while(k<updatedShipsArr.length){
-                    if(Integer.parseInt(updatedShipsArr[k])==guardX && Integer.parseInt(updatedShipsArr[k+1])==guardY){ //this is the ship the guard is currently standing at
-                        int shipPassengers = Integer.parseInt(updatedShipsArr[k+2]);
+                    if(Byte.parseByte(updatedShipsArr[k])==guardX && Byte.parseByte(updatedShipsArr[k+1])==guardY){ //this is the ship the guard is currently standing at
+                        byte shipPassengers = Byte.parseByte(updatedShipsArr[k+2]);
                         if(shipPassengers>remainingCapacity){
                             shipPassengers -= remainingCapacity;
                             remainingCapacity = 0;
@@ -239,7 +239,7 @@ public class Node {
                 String tempWrecks = "";
                 int m=0;
                 while (m<updatedWrecksArr.length){
-                    if(Integer.parseInt(updatedWrecksArr[m]) == guardX && Integer.parseInt(updatedWrecksArr[m+1]) == guardY){ //that's the wreck i want to retrieve its box
+                    if(Byte.parseByte(updatedWrecksArr[m]) == guardX && Byte.parseByte(updatedWrecksArr[m+1]) == guardY){ //that's the wreck i want to retrieve its box
                         retrievedBoxes++;
                         remainingBoxes--;
                     }
@@ -261,6 +261,10 @@ public class Node {
                     updatedWrecks = tempWrecks;
                 }
                 break;
+        }
+
+        if(updatedShips.equals("")){
+            updatedShips = "#";
         }
 
         String nextState = parsedState[0] + ";" + parsedState[1] + ";" + coastGuardLocation + ";" + parsedState[3] + ";" + updatedShips + ";"
