@@ -1,5 +1,7 @@
 package code;
 
+import java.util.ArrayList;
+
 public class Node {
 
 
@@ -31,7 +33,7 @@ public class Node {
 
     String currentState;
     Node parent;
-    String pathCost;    // cost -> (deathSoFar, lostBoxes)
+    String pathCost;    // cost -> (deathSoFar, retrievedBoxes)
     Actions actionTaken; //action to get to this node
     int depth;
 
@@ -73,15 +75,14 @@ public class Node {
         //get number of retrieved boxes
         int retrievedBoxes = Integer.parseInt(parsedState[11]);
 
-        //generate new ships locations and passengers count string
-        String updatedShips = "";
-
-
         //get number of remaining boxes
         int remainingBoxes = Integer.parseInt(parsedState[9]);
 
         //get number of remaining ships
         int remainingShips = Integer.parseInt(parsedState[8]);
+
+        //generate new ships locations and passengers count string
+        String updatedShips = "";
 
         //decrements passengers in ships and update passenger counts and wrecks
         String newWrecks = ""; //string to contain newly converted wrecks from ships
@@ -141,7 +142,7 @@ public class Node {
                         updatedWrecks = wreckArray[j-2] + "," + wreckArray[j-1] + "," + wreckArray[j];
                     }
                     else{
-                        updatedWrecks = "," +  wreckArray[j-2] + "," + wreckArray[j-1] + "," + wreckArray[j];
+                        updatedWrecks += "," +  wreckArray[j-2] + "," + wreckArray[j-1] + "," + wreckArray[j];
                     }
                 }
             }
@@ -167,11 +168,11 @@ public class Node {
         //formulate next state according to the action
         switch (nextAction){
             case UP:
-                coastGuardLocation = guardX + "," + (guardY+1);
+                coastGuardLocation = guardX + "," + (guardY-1);
                 break;
 
             case DOWN:
-                coastGuardLocation = guardX + "," + (guardY-1);
+                coastGuardLocation = guardX + "," + (guardY+1);
                 break;
 
             case LEFT:
@@ -199,7 +200,7 @@ public class Node {
                             shipPassengers -= remainingCapacity;
                             remainingCapacity = 0;
 
-                            if(tempShips.equals("")){ //the first ship to encpunter
+                            if(tempShips.equals("")){ //the first ship to encounter
                                 tempShips = updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + shipPassengers;
                             }
                             else{
@@ -277,8 +278,6 @@ public class Node {
         }
         return res;
     }
-
-
 
 
 }
