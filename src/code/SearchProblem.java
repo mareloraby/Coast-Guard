@@ -235,7 +235,7 @@ public class SearchProblem{
             }
             j+=3;
         }
-        if(onShip && shipPassengers>1 && remainingCapacity>0 && (prevAction==Actions.UP || prevAction==Actions.DOWN || prevAction==Actions.LEFT || prevAction==Actions.RIGHT)){
+        if(onShip && shipPassengers>1 && remainingCapacity>0  && (prevAction==Actions.UP || prevAction==Actions.DOWN || prevAction==Actions.LEFT || prevAction==Actions.RIGHT)){
             String nextState = n.generateNextState(currState, Actions.PICKUP);
             if(!(prevStates.contains(nextState))){
                 prevStates.add(nextState);

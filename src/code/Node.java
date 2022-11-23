@@ -145,6 +145,7 @@ public class Node {
                         updatedWrecks += "," +  wreckArray[j-2] + "," + wreckArray[j-1] + "," + wreckArray[j];
                     }
                 }
+                j+=3;
             }
             if(updatedWrecks.equals("")){ //there are no wrecks anymore in the current state
                 if(newWrecks.equals("")){ //no new wrecks were converted from ships
@@ -184,7 +185,7 @@ public class Node {
                 break;
 
             case DROP:
-                remainingPassengers -= remainingCapacity;
+                remainingPassengers -= (maxCapacity-remainingCapacity);
                 remainingCapacity = maxCapacity;
                 break;
 
@@ -253,7 +254,12 @@ public class Node {
 
                     m+=3;
                 }
-                updatedWrecks = tempWrecks;
+                if(tempWrecks.equals("")){
+                    updatedWrecks = "$";
+                }
+                else{
+                    updatedWrecks = tempWrecks;
+                }
                 break;
         }
 
