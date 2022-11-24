@@ -7,10 +7,7 @@ class CoastGuard extends SearchProblem{
     int numExpandedNodes;
     public static Deque<Node> BFQueue; //queue
     public static Deque<Node> DFQueue; //stack
-    public static Deque<Node> IDSQueue; //stack
-
-
-
+    public static Deque<Node> IDQueue; //stack
 
     public String solveSearchProblem(String grid, String strategy ){
 
@@ -32,9 +29,9 @@ class CoastGuard extends SearchProblem{
                 DFQueue.push(rootNode);
                 return DF();
             case "ID":
-                IDSQueue = new ArrayDeque<>();
-                IDSQueue.push(rootNode);
-                return IDS();
+                IDQueue = new ArrayDeque<>();
+                IDQueue.push(rootNode);
+                return ID();
             case "GR1":;
             case "GR2":;
             case "AS1":;
@@ -95,7 +92,7 @@ class CoastGuard extends SearchProblem{
         return initialState;
     }
 
-     public boolean isGoal(Node n){
+    public boolean isGoal(Node n){
 
          /*
              You reach your goal when there are no living passengers who are not rescued,
@@ -291,6 +288,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
     private String solve( String grid, String strategy,  boolean visualize ){
 
         String searchResult = solveSearchProblem(grid,strategy);
+
         if(visualize){
 
             // visualize steps
@@ -559,15 +557,15 @@ stations generated as long as no 2 objects occupy the same cell.*/
     }
 
 
-    public String IDS(){
+    public String ID(){
         int limit = 0;
-        Node root = IDSQueue.peek();
+        Node root = IDQueue.peek();
 
         while(true){
 
-            while (!IDSQueue.isEmpty()) {
+            while (!IDQueue.isEmpty()) {
 
-                Node currNode = IDSQueue.pop();
+                Node currNode = IDQueue.pop();
 
                 //check if it's the goal node
                 if (isGoal(currNode)) {
@@ -608,7 +606,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
                         //add all nodes to Queue
                         for (Node ni : childrenOfNode) {
-                            IDSQueue.push(ni);
+                            IDQueue.push(ni);
                         }
 
                     }
@@ -619,7 +617,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
 
             limit++;
-            IDSQueue.push(root);
+            IDQueue.push(root);
 
         }
 
