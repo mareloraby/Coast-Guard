@@ -4,9 +4,6 @@ import java.util.ArrayList;
 
 public class Node {
 
-
-    // state
-
     /*
     state of the world: (same as initial grid)
 
@@ -24,11 +21,8 @@ public class Node {
      * Dead passengers  index 10
      * Retrieved boxes  index 11
 
-
-
      griddims;maxCapacity; location of coast guard; location of stations; location of ships;$;maxCapacity;0;0;0;0;0
      $: no wrecks
-
      */
 
     String currentState;
@@ -46,8 +40,6 @@ public class Node {
         this.actionTaken = actionTaken;
         this.depth = depth;
     }
-
-// expansion here
 
     // generate next state
     public String generateNextState(String currState, Actions nextAction){
@@ -274,6 +266,7 @@ public class Node {
         return nextState;
     }
 
+    // get path that lead to current node
     public String getAncestors(){
         String res = "";
         Node n = this;

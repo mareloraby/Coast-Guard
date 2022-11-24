@@ -15,33 +15,4 @@ public abstract class SearchProblem{
         return false;
     }
 
-
-//    public static String BF(){
-//        String result = "";
-//
-//        while(!BFQueue.isEmpty()){
-//
-//            Node currentNode = BFQueue.poll();
-//            expandedNodes++;
-//
-//            // is goal test?
-//
-//            // expand with all valid actions:
-//            /*
-//            UP,
-//            DOWN,
-//            LEFT,
-//            RIGHT,
-//            PICKUP,
-//            DROP,
-//            RETRIEVE
-//            */
-//
-//        }
-//        return result;
-//    }
-
-
-
-
 }

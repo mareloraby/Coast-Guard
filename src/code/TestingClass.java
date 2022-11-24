@@ -1,15 +1,27 @@
 package code;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TestingClass {
+
 
     public static void main(String[] args) {
 
         CoastGuard costGuard = new CoastGuard();
+
         String generated = costGuard.genGrid();
-        System.out.println("Generated Grid: " + generated);
-        System.out.println("Result: " + costGuard.solve(generated,"BF",false));
+        System.out.println(generated);
+        costGuard.visualizeState(generated);
+//        System.out.println("Generated Grid: " + generated);
+//        System.out.println("Result: " + costGuard.solve(generated,"DF",false));
+//
+//        String [][] dumm = new String[2][2];
+//        System.out.println(dumm[0][1] == null);
+
+
+
+
 
 //
 //

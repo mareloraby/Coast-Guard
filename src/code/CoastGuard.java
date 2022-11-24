@@ -5,138 +5,21 @@ import java.util.*;
 public class CoastGuard extends SearchProblem{
 
     static int numExpandedNodes;
+
+    public static HashSet<String> prevStates = new HashSet<String>();
+
     public static Deque<Node> BFQueue; //queue
     public static Deque<Node> DFQueue; //stack
     public static Deque<Node> IDQueue; //stack
 
-    public static String solveSearchProblem(String grid, String strategy ){
-
-        // create initialState and root node from input grid
-        String initialState = createInitialState(grid);
-        Node rootNode = new Node(initialState,null,"0,0",null,0);
-
-        // counter for expanded nodes
-        numExpandedNodes = 0;
-
-        // implement search based on strategy
-        switch(strategy){
-            case "BF":
-                BFQueue = new ArrayDeque<Node>();
-                BFQueue.add(rootNode);
-                return BF();
-            case "DF":
-                DFQueue = new ArrayDeque<>();
-                DFQueue.push(rootNode);
-                return DF();
-            case "ID":
-                IDQueue = new ArrayDeque<>();
-                IDQueue.push(rootNode);
-                return ID();
-            case "GR1":;
-            case "GR2":;
-            case "AS1":;
-            case "AS2":;
-        }
-
-        return "";
-    }
-
-    public static String createInitialState(String grid){
-
-        /*
-         * Grid dimensions index 0
-         * Max capacity  index 1
-         * Current Coast Guard Location index 2
-         * Locations of all Stations  index 3
-         * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
-         * Location of all wrecks and each box's current damage: wrX1, wrfY1, wrD1  index 5
-         * Remaining Coast Guard Capacity  index 6
-         * Remaining Passengers Counter  index 7
-         * Remaining Ships Counter  index 8
-         * Remaining Boxes Counter  index 9
-         * Dead passengers  index 10
-         * Retrieved boxes  index 11
-         */
-
-        String [] parsedGrid =  grid.split(";");
-
-        //    * Grid dimensions index 0
-        //    * Max capacity  index 1
-        //    * Current Coast Guard Location index 2
-        //    * Locations of all Stations  index 3
-        //    * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
-
-        String [] shipsLocations = parsedGrid[4].split(",");
-
-        //    * Location of all wrecks and each box's current damage: wrX1, wrfY1, wrD1  index 5
-        //    * Remaining Coast Guard Capacity  index 6
-        //    * Remaining Passengers Counter  index 7
-
-        int totalPassengers = 0;
-        int i = 2;
-
-        while(i<shipsLocations.length){
-            totalPassengers += Integer.parseInt(shipsLocations[i]);
-            i+=3;
-        }
-
-        //    * Remaining Ships Counter  index 8
-
-        int totalShips = (shipsLocations.length)/3;
-
-        //    * Remaining Boxes Counter  index 9
-        //    * Dead passengers  index 10
-        //    * Retrieved boxes  index 11
-
-        String initialState = grid+"$;"+parsedGrid[1]+";"+totalPassengers+";"+totalShips+";"+0+";"+0+";"+0;
-
-        System.out.println("Initial State: " + initialState);
-        return initialState;
-    }
-
-    public static boolean isGoal(Node n){
-
-         /*
-             You reach your goal when there are no living passengers who are not rescued,
-           there are no undamaged boxes which have not been retrieved, and the rescue boat is not
-           carrying any passengers.
-
-             * Remaining Coast Guard Capacity  index 6 (*)
-             * Remaining Passengers Counter  index 7 (*)
-             * Remaining Ships Counter  index 8
-             * Remaining Boxes Counter  index 9 (*)
-             * Dead passengers  index 10
-             * Retrieved boxes  index 11
-         */
-
-         String currState = n.currentState;
-         String [] currStateArr = currState.split(";");
-
-         byte maxCapacity = Byte.parseByte(currStateArr[1]);
-         byte remainingCapacity = Byte.parseByte(currStateArr[6]);
-         int remainingPassengersOnGrid = Integer.parseInt(currStateArr[7]);
-         byte remainingBoxesNotRetrieved = Byte.parseByte(currStateArr[9]);
-
-         if((remainingCapacity == maxCapacity ) &&
-                 (remainingPassengersOnGrid == 0) &&
-                 (remainingBoxesNotRetrieved == 0) ){
-
-             System.out.println("Goal Node: " + Arrays.toString(currStateArr));
-             return true;
-         }
-
-         // not goal
-         return false;
-     }
-
     private static ArrayList<Integer> emptyCells;
     public static String genGrid(){
-
-        /*randomly generates a grid. The dimensions of the grid, the locations of
-the coast guard, stations, ships, number of passengers for each ship and the coast
-guard capacity are all to be randomly generated. A minimum of 1 ship and 1 station
-have to be generated. However, there is no upper limit for the number of ships or
-stations generated as long as no 2 objects occupy the same cell.*/
+        /*
+                randomly generates a grid. The dimensions of the grid, the locations of
+        the coast guard, stations, ships, number of passengers for each ship and the coast
+        guard capacity are all to be randomly generated. A minimum of 1 ship and 1 station
+        have to be generated. However, there is no upper limit for the number of ships or
+        stations generated as long as no 2 objects occupy the same cell.*/
 
 
         // grid of cells where 5 < m; n < 15
@@ -198,94 +81,29 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
         }
 
+        // build grid
         StringBuilder gridString = new StringBuilder();
 
         gridString.append(width+","+height+";");
         gridString.append(boatCapacity+";");
         gridString.append(coastGc+","+coastGr+";");
-
         gridString.append(stationsLocations[1]+","+stationsLocations[0]);
+
         for(int st = 1; st< stationsCount; st++) {
             gridString.append("," + stationsLocations[2 * st + 1] + "," + stationsLocations[2 * st]);
         }
-        gridString.append(";");
 
+        gridString.append(";");
         gridString.append(shipsLocations[1]+","+shipsLocations[0]+","+numOfPassengers[0]);
+
         for(int sh = 1; sh< shipsCount; sh++) {
             gridString.append("," + shipsLocations[2 * sh + 1] + "," + shipsLocations[2 * sh]+","+numOfPassengers[sh]);
         }
+
         gridString.append(";");
 
 
         return gridString.toString();
-
-    }
-
-    private static int random(int start,int end) {
-        return start   +  (int)( Math.random() * (end-start+1) );
-    }
-
-    private static int randomCell() {
-        int cellIndex = random(0,emptyCells.size()-1);
-        int cell = emptyCells.get(cellIndex);
-
-        emptyCells.remove(cellIndex);
-
-        return cell;
-    }
-
-    public static void visualizeGrid(String grid){
-
-        String [] gridArray = grid.split(";");
-
-        String [] dimensions = gridArray[0].split(",");
-
-        int width = Integer.parseInt(dimensions[0]);
-        int height = Integer.parseInt(dimensions[1]);
-
-        String [][] gameBoard = new String[height][width];
-
-        // Capacity
-        String boatCap = gridArray[1];
-
-        // Coast Guard
-        String [] cgLocation = gridArray[2].split(",");
-        int cgX = Integer.parseInt(cgLocation[0]);
-        int cgY = Integer.parseInt(cgLocation[1]);
-
-        gameBoard[cgY][cgX] = "cg"+boatCap;
-
-
-        // Stations
-        String [] gridStations = gridArray[3].split(",");
-
-        for(int i = 0; i< gridStations.length -1; i++ ){
-            int stX = Integer.parseInt(gridStations[i]);
-            int stY = Integer.parseInt(gridStations[i+1]);
-            gameBoard[stY][stX] = "st"+(i/2);
-            i++;
-        }
-
-        // Ships
-        String [] gridShips = gridArray[4].split(",");
-
-        for(int i = 0; i< gridShips.length -2; i++ ){
-            int shX = Integer.parseInt(gridShips[i]);
-            int shY = Integer.parseInt(gridShips[i+1]);
-            int numPass =  Integer.parseInt(gridShips[i+2]);
-
-            gameBoard[shY][shX] = numPass+"sh"+(i/3);
-
-            i+=2;
-        }
-
-        System.out.println();
-        for (String[] strings : gameBoard) {
-            for (int j = 0; j < strings.length; j++) {
-                System.out.print(strings[j] + " ");
-            }
-            System.out.println();
-        }
 
     }
 
@@ -295,15 +113,203 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
         if(visualize){
 
-
-
             // visualize steps
+            /*
+            *
+            visualize is a Boolean parameter which, when set to true, results in your
+            program’s side-effecting a visual presentation of the board as it undergoes the
+            different steps of the (discovered solution).
+            *
+            * */
 
         }
+
+
+
         return searchResult;
     }
 
-    public static HashSet<String> prevStates = new HashSet<String>();
+    // ----------------------------------------------------------------------------------------------------------------------------
+
+
+    public static String solveSearchProblem(String grid, String strategy ){
+
+        // create initialState and root node from input grid
+        String initialState = createInitialState(grid);
+        Node rootNode = new Node(initialState,null,"0,0",null,0);
+
+        // counter for expanded nodes
+        numExpandedNodes = 0;
+
+        // implement search based on strategy
+        switch(strategy){
+            case "BF":
+                BFQueue = new ArrayDeque<Node>();
+                BFQueue.add(rootNode);
+                return BF();
+            case "DF":
+                DFQueue = new ArrayDeque<>();
+                DFQueue.push(rootNode);
+                return DF();
+            case "ID":
+                IDQueue = new ArrayDeque<>();
+                IDQueue.push(rootNode);
+                return ID();
+            case "GR1":;
+            case "GR2":;
+            case "AS1":;
+            case "AS2":;
+        }
+
+        return "";
+    }
+
+    public static void visualizeState(String currState){
+
+        /*
+         * Grid dimensions index 0
+         * Max capacity  index 1
+         * Current Coast Guard Location index 2
+         * Locations of all Stations  index 3
+         * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
+         * Location of all wrecks and each box's current damage: wrX1, wrfY1, wrD1  index 5
+         * Remaining Coast Guard Capacity  index 6
+         * Remaining Passengers Counter  index 7
+         * Remaining Ships Counter  index 8
+         * Remaining Boxes Counter  index 9
+         * Dead passengers  index 10
+         * Retrieved boxes  index 11
+         */
+
+        String [] currStateArray = currState.split(";");
+
+        //    * Grid dimensions index 0
+        String [] dims = currStateArray[0].split(",");
+        byte gridX = Byte.parseByte(dims[0]);
+        byte gridY = Byte.parseByte(dims[1]);
+
+        String [][] gameBoard = new String[gridY][gridX];
+
+
+        //    * Max capacity  index 1
+        byte maxCapacity = Byte.parseByte(currStateArray[1]);
+
+        //    * Current Coast Guard Location index 2
+        String [] guardLocation = currStateArray[2].split(",");
+        byte guardX = Byte.parseByte(guardLocation[0]);
+        byte guardY = Byte.parseByte(guardLocation[1]);
+
+        gameBoard[guardY][guardX] = "cg"+maxCapacity;
+
+
+        //    * Locations of all Stations  index 3
+        String [] stationLocations = currStateArray[3].split(",");
+
+        for(int i = 0; i < stationLocations.length -1; i++ ){
+
+            byte stX = Byte.parseByte(stationLocations[i]);
+            byte stY = Byte.parseByte(stationLocations[i+1]);
+            gameBoard[stY][stX] = "st"+(i/2);
+            i++;
+
+        }
+
+        //    * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
+        String [] shipsLocations = currStateArray[4].split(",");
+
+        if(shipsLocations.length>1)  // if there's a ship
+        {
+            for (int i = 0; i < shipsLocations.length - 2; i++) {
+                byte shX = Byte.parseByte(shipsLocations[i]);
+                byte shY = Byte.parseByte(shipsLocations[i + 1]);
+                byte numPass = Byte.parseByte(shipsLocations[i + 2]);
+
+                gameBoard[shY][shX] = numPass + "sh" + (i / 3);
+                i += 2;
+            }
+        }
+
+        // if the input is not the grid
+        if(currStateArray.length>5) {
+            //    * Location of all wrecks and each box's current damage: wrX1, wrY1, wrD1  index 5
+            String[] wrecksLocations = currStateArray[5].split(",");
+
+            if (wrecksLocations.length > 1) {
+                for (int i = 0; i < wrecksLocations.length - 2; i++) {
+                    byte wrX = Byte.parseByte(wrecksLocations[i]);
+                    byte wrY = Byte.parseByte(wrecksLocations[i + 1]);
+                    byte wrDamage = Byte.parseByte(wrecksLocations[i + 2]);
+
+                    gameBoard[wrY][wrX] = wrDamage + "wr" + (i / 3);
+                    i += 2;
+                }
+
+            }
+
+
+            //    * Remaining Coast Guard Capacity  index 6
+            byte remainingCapacity = Byte.parseByte(currStateArray[6]);
+
+            //    * Remaining Passengers Counter  index 7
+            short remainingPassengers = Byte.parseByte(currStateArray[7]);
+
+            //    * Remaining Ships Counter  index 8
+            //    * Remaining Boxes Counter  index 9
+
+            //    * Dead passengers  index 10
+            short deadSoFar = Byte.parseByte(currStateArray[10]);
+
+            //    * Retrieved boxes  index 11
+            short retrievedBoxes = Byte.parseByte(currStateArray[11]);
+
+
+            System.out.println("Dead so far: " + deadSoFar + "Retrieved boxes so far: " + retrievedBoxes);
+        }
+
+        printStringGrid(gameBoard);
+
+    }
+
+    // creates the initial state from generated grid
+    public static String createInitialState(String grid){
+
+        String [] parsedGrid =  grid.split(";");
+
+        //    * Grid dimensions index 0
+        //    * Max capacity  index 1
+        //    * Current Coast Guard Location index 2
+        //    * Locations of all Stations  index 3
+        //    * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
+
+        String [] shipsLocations = parsedGrid[4].split(",");
+
+        //    * Location of all wrecks and each box's current damage: wrX1, wrfY1, wrD1  index 5
+        //    * Remaining Coast Guard Capacity  index 6
+        //    * Remaining Passengers Counter  index 7
+
+        int totalPassengers = 0;
+        int i = 2;
+
+        while(i<shipsLocations.length){
+            totalPassengers += Integer.parseInt(shipsLocations[i]);
+            i+=3;
+        }
+
+        //    * Remaining Ships Counter  index 8
+
+        int totalShips = (shipsLocations.length)/3;
+
+        //    * Remaining Boxes Counter  index 9
+        //    * Dead passengers  index 10
+        //    * Retrieved boxes  index 11
+
+        String initialState = grid+"$;"+parsedGrid[1]+";"+totalPassengers+";"+totalShips+";"+0+";"+0+";"+0;
+
+        System.out.println("Initial State: " + initialState);
+        return initialState;
+    }
+
+    // expands nodes
     public static ArrayList<Node> expandNode(Node n){
 
         ArrayList<Node> expandedNodes = new ArrayList<Node>();
@@ -460,8 +466,52 @@ stations generated as long as no 2 objects occupy the same cell.*/
             }
         }
 
+//        for (Node node : expandedNodes){
+//            System.out.print(node.actionTaken + " ");
+//        }
+//        System.out.println("");
+
         return expandedNodes;
     }
+
+    // Checks whether current node is the goal node
+    public static boolean isGoal(Node n){
+
+         /*
+             You reach your goal when there are no living passengers who are not rescued,
+           there are no undamaged boxes which have not been retrieved, and the rescue boat is not
+           carrying any passengers.
+
+             * Remaining Coast Guard Capacity  index 6 (*)
+             * Remaining Passengers Counter  index 7 (*)
+             * Remaining Ships Counter  index 8
+             * Remaining Boxes Counter  index 9 (*)
+             * Dead passengers  index 10
+             * Retrieved boxes  index 11
+         */
+
+        String currState = n.currentState;
+        String [] currStateArr = currState.split(";");
+
+        byte maxCapacity = Byte.parseByte(currStateArr[1]);
+        byte remainingCapacity = Byte.parseByte(currStateArr[6]);
+        int remainingPassengersOnGrid = Integer.parseInt(currStateArr[7]);
+        byte remainingBoxesNotRetrieved = Byte.parseByte(currStateArr[9]);
+
+        if((remainingCapacity == maxCapacity ) &&
+                (remainingPassengersOnGrid == 0) &&
+                (remainingBoxesNotRetrieved == 0) ){
+
+            System.out.println("Goal Node: " + Arrays.toString(currStateArr));
+            return true;
+        }
+
+        // not goal
+        return false;
+    }
+
+
+    // ---------------------------------------------------   Search algorithms:  ---------------------------------------------------
 
     public static String BF(){
 
@@ -560,7 +610,6 @@ stations generated as long as no 2 objects occupy the same cell.*/
         return "";
     }
 
-
     public static String ID(){
         int limit = 0;
         Node root = IDQueue.peek();
@@ -573,6 +622,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
                 //check if it's the goal node
                 if (isGoal(currNode)) {
+
                 /*
                 plan;deaths;retrieved;nodes
 
@@ -631,6 +681,71 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
     }
 
+    public String GR1(){
+        return "";
+    }
+
+    public String AS1(){
+        return "";
+    }
+
+    // ---------------------------------------------------    Helper Methods:    ---------------------------------------------------
+
+
+    // Helper method to genGrid()
+    private static int random(int start,int end) {
+        return start   +  (int)( Math.random() * (end-start+1) );
+    }
+
+    // Helper method to genGrid()
+    private static int randomCell() {
+        int cellIndex = random(0,emptyCells.size()-1);
+        int cell = emptyCells.get(cellIndex);
+
+        emptyCells.remove(cellIndex);
+
+        return cell;
+    }
+
+    // Helper method to visualizeState
+    public static void printStringGrid(String[][] array){
+
+        System.out.println(array[0].length + "x" + array.length);
+
+        for (int i = 0; i < array.length; i++){
+            System.out.print("+--------+");
+            for (int j = 0; j < array[0].length-1; j++){
+                System.out.print("---------+");
+            }
+            System.out.println();
+
+            for (int j = 0; j < array[0].length; j++){
+
+                if(array[i][j] == null)
+                    array[i][j] = "*";
+                if (array[i][j].length() < 10){
+                    int spaces = (9 - array[i][j].length()) / 2;
+                    for (int k = 0; k < spaces; k++){
+                        System.out.print(" ");
+                    }
+                    System.out.print(array[i][j]);
+                    for (int k = 0; k < (9 - array[i][j].length()) - spaces; k++){
+                        System.out.print(" ");
+                    }
+                }
+                else{
+                    System.out.print(array[i][j].substring(0, 9));
+                }
+                System.out.print("|");
+            }
+            System.out.println();
+
+        }
+        System.out.print("---------+");
+        for (int j = 0; j < array[0].length-1; j++){
+            System.out.print("---------+");
+        }
+    }
 
 
 }
