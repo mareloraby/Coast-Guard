@@ -6,13 +6,16 @@ public class CoastGuard extends SearchProblem{
 
     static int numExpandedNodes;
 
+    private static ArrayList<Integer> emptyCells;
+
     public static HashSet<String> prevStates = new HashSet<String>();
 
     public static Deque<Node> BFQueue; //queue
     public static Deque<Node> DFQueue; //stack
     public static Deque<Node> IDQueue; //stack
 
-    private static ArrayList<Integer> emptyCells;
+
+
     public static String genGrid(){
         /*
                 randomly generates a grid. The dimensions of the grid, the locations of
