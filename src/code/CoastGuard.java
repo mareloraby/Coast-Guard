@@ -5,8 +5,10 @@ import java.util.*;
 class CoastGuard extends SearchProblem{
 
     int numExpandedNodes;
-    public static Queue<Node> BFQueue;
-    public static Stack<Node> DFQueue;
+    public static Deque<Node> BFQueue; //queue
+    public static Deque<Node> DFQueue; //stack
+    public static Deque<Node> IDSQueue; //stack
+
 
 
 
@@ -22,14 +24,17 @@ class CoastGuard extends SearchProblem{
         // implement search based on strategy
         switch(strategy){
             case "BF":
-                BFQueue = new LinkedList<Node>();
+                BFQueue = new ArrayDeque<Node>();
                 BFQueue.add(rootNode);
                 return BF();
             case "DF":
-                DFQueue = new Stack<Node>();
-                DFQueue.add(rootNode);
+                DFQueue = new ArrayDeque<>();
+                DFQueue.push(rootNode);
                 return DF();
-            case "ID":;
+            case "ID":
+                IDSQueue = new ArrayDeque<>();
+                IDSQueue.push(rootNode);
+                return IDS();
             case "GR1":;
             case "GR2":;
             case "AS1":;
@@ -506,6 +511,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
     public String DF(){
 
+
         while(!DFQueue.isEmpty()){
 
             Node currNode = DFQueue.pop();
@@ -550,6 +556,77 @@ stations generated as long as no 2 objects occupy the same cell.*/
         }
 
         return "";
+    }
+
+
+    public String IDS(){
+        int limit = 0;
+        Node root = IDSQueue.peek();
+
+        while(true){
+
+            while (!IDSQueue.isEmpty()) {
+
+                Node currNode = IDSQueue.pop();
+
+                //check if it's the goal node
+                if (isGoal(currNode)) {
+                /*
+                plan;deaths;retrieved;nodes
+
+                where:
+                – plan: the sequence of actions that lead to the goal (if such a sequence exists) separated
+                by commas. For example: left,right,pickup,up,drop,down,retrieve.
+
+                – deaths: number of passengers who have died in the solution starting from the
+                initial state to the found goal state.
+
+                – retrieved: number of black boxes successfully retrieved starting from the initial
+                state to the found goal state.
+
+                – nodes: is the number of nodes chosen for expansion during the search.
+
+                 */
+
+                    String[] currNodeStateArray = currNode.currentState.split(";");
+                    String plan = currNode.getAncestors();
+                    String deaths = currNodeStateArray[10];
+                    String retrieved = currNodeStateArray[11];
+
+                    return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
+
+                }
+
+                if (currNode.depth < limit ) {
+
+                    // get all child nodes of the current node
+                    ArrayList<Node> childrenOfNode = expandNode(currNode);
+
+                    if(childrenOfNode.size()>0){ // there is children
+
+                        numExpandedNodes++;
+
+                        //add all nodes to Queue
+                        for (Node ni : childrenOfNode) {
+                            IDSQueue.push(ni);
+                        }
+
+                    }
+
+
+                }
+            }
+
+
+            limit++;
+            IDSQueue.push(root);
+
+        }
+
+
+
+
+
     }
 
 
