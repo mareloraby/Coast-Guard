@@ -7,9 +7,13 @@ import java.util.Queue;
 
 public abstract class SearchProblem{
 
-    abstract public String solveSearchProblem(String grid, String strategy );
+    public static String solveSearchProblem(String grid, String strategy) {
+        return null;
+    }
 
-    abstract public boolean isGoal(Node node);
+    public static boolean isGoal(Node node) {
+        return false;
+    }
 
 
 //    public static String BF(){

@@ -8,8 +8,9 @@ public class TestingClass {
 
         CoastGuard costGuard = new CoastGuard();
         String generated = costGuard.genGrid();
-        System.out.println(generated);
-        System.out.println(costGuard.solve(generated,"BF",false));
+        System.out.println("Generated Grid: " + generated);
+        System.out.println("Result: " + costGuard.solve(generated,"BF",false));
+
 //
 //
 //        costGuard.visualizeGrid(generated);

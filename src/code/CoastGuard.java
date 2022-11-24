@@ -2,14 +2,14 @@ package code;
 
 import java.util.*;
 
-class CoastGuard extends SearchProblem{
+public class CoastGuard extends SearchProblem{
 
-    int numExpandedNodes;
+    static int numExpandedNodes;
     public static Deque<Node> BFQueue; //queue
     public static Deque<Node> DFQueue; //stack
     public static Deque<Node> IDQueue; //stack
 
-    public String solveSearchProblem(String grid, String strategy ){
+    public static String solveSearchProblem(String grid, String strategy ){
 
         // create initialState and root node from input grid
         String initialState = createInitialState(grid);
@@ -41,7 +41,7 @@ class CoastGuard extends SearchProblem{
         return "";
     }
 
-    public String createInitialState(String grid){
+    public static String createInitialState(String grid){
 
         /*
          * Grid dimensions index 0
@@ -94,7 +94,7 @@ class CoastGuard extends SearchProblem{
         return initialState;
     }
 
-    public boolean isGoal(Node n){
+    public static boolean isGoal(Node n){
 
          /*
              You reach your goal when there are no living passengers who are not rescued,
@@ -112,8 +112,6 @@ class CoastGuard extends SearchProblem{
          String currState = n.currentState;
          String [] currStateArr = currState.split(";");
 
-        System.out.println(Arrays.toString(currStateArr));
-
          byte maxCapacity = Byte.parseByte(currStateArr[1]);
          byte remainingCapacity = Byte.parseByte(currStateArr[6]);
          int remainingPassengersOnGrid = Integer.parseInt(currStateArr[7]);
@@ -123,6 +121,7 @@ class CoastGuard extends SearchProblem{
                  (remainingPassengersOnGrid == 0) &&
                  (remainingBoxesNotRetrieved == 0) ){
 
+             System.out.println("Goal Node: " + Arrays.toString(currStateArr));
              return true;
          }
 
@@ -235,7 +234,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
         return cell;
     }
 
-    public void visualizeGrid(String grid){
+    public static void visualizeGrid(String grid){
 
         String [] gridArray = grid.split(";");
 
@@ -281,20 +280,22 @@ stations generated as long as no 2 objects occupy the same cell.*/
         }
 
         System.out.println();
-        for(int k = 0;k<gameBoard.length; k++){
-            for(int j=0 ; j< gameBoard[k].length;j++){
-                System.out.print(gameBoard[k][j] + " ");
+        for (String[] strings : gameBoard) {
+            for (int j = 0; j < strings.length; j++) {
+                System.out.print(strings[j] + " ");
             }
             System.out.println();
         }
 
     }
 
-    public String solve( String grid, String strategy,  boolean visualize ){
+    public static String solve( String grid, String strategy,  boolean visualize ){
 
         String searchResult = solveSearchProblem(grid,strategy);
 
         if(visualize){
+
+
 
             // visualize steps
 
@@ -462,7 +463,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
         return expandedNodes;
     }
 
-    public String BF(){
+    public static String BF(){
 
         while(!BFQueue.isEmpty()){
 
@@ -503,16 +504,14 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
 
             //add all nodes to BFQueue
-            for (Node ni : childrenOfNode){
-                BFQueue.add(ni);
-            }
+            BFQueue.addAll(childrenOfNode);
 
         }
 
         return "";
     }
 
-    public String DF(){
+    public static String DF(){
 
 
         while(!DFQueue.isEmpty()){
@@ -562,7 +561,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
     }
 
 
-    public String ID(){
+    public static String ID(){
         int limit = 0;
         Node root = IDQueue.peek();
 
