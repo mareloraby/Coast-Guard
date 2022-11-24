@@ -88,7 +88,9 @@ class CoastGuard extends SearchProblem{
         //    * Dead passengers  index 10
         //    * Retrieved boxes  index 11
 
-        String initialState = grid+";$;"+parsedGrid[1]+";"+totalPassengers+";"+totalShips+";"+0+";"+0+";"+0;
+        String initialState = grid+"$;"+parsedGrid[1]+";"+totalPassengers+";"+totalShips+";"+0+";"+0+";"+0;
+
+        System.out.println("Initial State: " + initialState);
         return initialState;
     }
 
@@ -109,6 +111,8 @@ class CoastGuard extends SearchProblem{
 
          String currState = n.currentState;
          String [] currStateArr = currState.split(";");
+
+        System.out.println(Arrays.toString(currStateArr));
 
          byte maxCapacity = Byte.parseByte(currStateArr[1]);
          byte remainingCapacity = Byte.parseByte(currStateArr[6]);
@@ -140,6 +144,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
         byte height = (byte)random(5,15);
         byte width = (byte)random(5,15);
         String[][] grid = new String[height][width];
+
 
         emptyCells = new ArrayList<Integer>(height*width);
         for(int i=0;i<height*width;i++)
@@ -285,7 +290,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
 
     }
 
-    private String solve( String grid, String strategy,  boolean visualize ){
+    public String solve( String grid, String strategy,  boolean visualize ){
 
         String searchResult = solveSearchProblem(grid,strategy);
 
@@ -486,7 +491,7 @@ stations generated as long as no 2 objects occupy the same cell.*/
                 String plan = currNode.getAncestors();
                 String deaths = currNodeStateArray[10];
                 String retrieved = currNodeStateArray[11];
-                String numExpandedNodes = "";
+
 
                 return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
 

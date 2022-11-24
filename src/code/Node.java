@@ -73,13 +73,13 @@ public class Node {
         int deadPassengers = Integer.parseInt(parsedState[10]);
 
         //get number of retrieved boxes
-        byte retrievedBoxes = Byte.parseByte(parsedState[11]);
+        short retrievedBoxes = Short.parseShort(parsedState[11]);
 
         //get number of remaining boxes
-        byte remainingBoxes = Byte.parseByte(parsedState[9]);
+        short remainingBoxes = Short.parseShort(parsedState[9]);
 
         //get number of remaining ships
-        byte remainingShips = Byte.parseByte(parsedState[8]);
+        short remainingShips = Short.parseShort(parsedState[8]);
 
         //generate new ships locations and passengers count string
         String updatedShips = "";
