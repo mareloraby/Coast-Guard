@@ -13,6 +13,7 @@ public class CoastGuard extends SearchProblem{
     public static Deque<Node> BFQueue; //queue
     public static Stack<Node> DFQueue; //stack
     public static Deque<Node> IDQueue; //stack
+    public static PriorityQueue<Node> ucQueue ;
 
 
 
@@ -160,6 +161,10 @@ public class CoastGuard extends SearchProblem{
                 IDQueue = new ArrayDeque<Node>();
                 IDQueue.push(rootNode);
                 return ID();
+            case "UC":
+//                ucQueue = new PriorityQueue<Node>((x,y)->(x.pathCost-y.pathCost));
+//                ucQueue.add(rootNode);
+//                return UC();
             case "GR1":;
             case "GR2":;
             case "AS1":;
@@ -701,6 +706,32 @@ public class CoastGuard extends SearchProblem{
     public String AS1(){
         return "";
     }
+
+//    public static String UC(){
+//
+//
+//        PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.pathCost-y.pathCost));// UCS
+//        pq.add(initNode);
+//        while(!pq.isEmpty())
+//        {
+//            Node currentNode = (Node) pq.poll();
+//
+//
+//            boolean isGoal = problem.goalTest(currentNode.state);
+//            if(isGoal)
+//                return buildPath(currentNode,visualize);
+//
+//            LinkedList<Node> nodes = expand(problem, currentNode);
+//
+//            for(Node node: nodes) {
+//                pq.add(node);
+//            }
+//
+//
+//        }
+//        return "Fail";
+//    }
+
 
     // ---------------------------------------------------    Helper Methods:    ---------------------------------------------------
 
