@@ -184,8 +184,6 @@ public class Node {
                 break;
 
             case PICKUP:
-                // revive dead person at pickup
-                deadPassengers--;
 
                 //get number of passengers of this cell's ship (cell at which the coast guard is currently standing on)
                 String [] updatedShipsArr = updatedShips.split(",");
@@ -206,6 +204,11 @@ public class Node {
                             }
                         }
                         else{ //all ship's passengers will be saved and the ship will be a wreck with a black box of count 0
+
+                            //revive dead one
+                            if(shipPassengers!=remainingCapacity)
+                                deadPassengers--;
+
                             remainingCapacity -= shipPassengers;
                             remainingShips--;
                             remainingBoxes++;

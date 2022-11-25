@@ -11,7 +11,7 @@ public class CoastGuard extends SearchProblem{
     public static HashSet<String> prevStates = new HashSet<String>();
 
     public static Deque<Node> BFQueue; //queue
-    public static Deque<Node> DFQueue; //stack
+    public static Stack<Node> DFQueue; //stack
     public static Deque<Node> IDQueue; //stack
 
 
@@ -112,7 +112,7 @@ public class CoastGuard extends SearchProblem{
 
     public static String solve( String grid, String strategy,  boolean visualize ){
 
-        System.out.println(switchInputXY(grid));
+//        System.out.println(switchInputXY(grid));
         String searchResult = solveSearchProblem(switchInputXY(grid),strategy);
 
         if(visualize){
@@ -152,11 +152,11 @@ public class CoastGuard extends SearchProblem{
                 BFQueue.add(rootNode);
                 return BF();
             case "DF":
-                DFQueue = new ArrayDeque<>();
+                DFQueue = new Stack<Node>();
                 DFQueue.push(rootNode);
                 return DF();
             case "ID":
-                IDQueue = new ArrayDeque<>();
+                IDQueue = new ArrayDeque<Node>();
                 IDQueue.push(rootNode);
                 return ID();
             case "GR1":;
@@ -547,7 +547,7 @@ public class CoastGuard extends SearchProblem{
                 String deaths = currNodeStateArray[10];
                 String retrieved = currNodeStateArray[11];
 
-
+                System.out.println(plan);
                 return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
 
             }
@@ -563,15 +563,15 @@ public class CoastGuard extends SearchProblem{
 
         }
 
-        return "";
+        return "fail";
     }
 
     public static String DF(){
 
-
         while(!DFQueue.isEmpty()){
 
             Node currNode = DFQueue.pop();
+
 
             //check if it's the goal node
             if(isGoal(currNode)){
@@ -603,16 +603,17 @@ public class CoastGuard extends SearchProblem{
 
             // get all child nodes of the current node
             ArrayList<Node> childrenOfNode = expandNode(currNode);
-            numExpandedNodes++;
+            if(childrenOfNode.size()>0) numExpandedNodes++;
 
-            //add all nodes to Queue
+            //add all nodes to Stack
             for (Node ni : childrenOfNode){
                 DFQueue.push(ni);
+//                DFQueue.addLast(ni);
             }
 
         }
 
-        return "";
+        return "fail";
     }
 
     public static String ID(){

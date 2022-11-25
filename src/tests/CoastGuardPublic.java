@@ -1,7 +1,9 @@
 package tests;
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -612,9 +614,12 @@ static class Checker{
 	public static boolean applyPlan(String grid, String solution){
 		boolean linkin = true;
 		String[] solutionArray  = solution.split(";");
+		System.out.println("solutionArray" + Arrays.toString(solutionArray));
 		String plan = solutionArray[0];
 		int blue = Integer.parseInt(solutionArray[1]);
+		System.out.println("death is " + blue);
 		int doors = Integer.parseInt(solutionArray[2]);
+		System.out.println("retrieved is " + doors);
 		
 		plan.replace(" ", "");
 		plan.replace("\n", "");
@@ -678,6 +683,9 @@ static class Checker{
 			if(!linkin)
 				return false;
 	}
+
+		System.out.println("deaths should be: " + s.d);
+		System.out.println("retrieved should be " + s.r);
 
 		return s.cool() && s.d==blue && s.r==doors;
 	}
