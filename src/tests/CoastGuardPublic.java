@@ -584,7 +584,8 @@ static class Checker{
 					if (v==1) {v=(byte)-20;d++;}
 					else {
 					if 
-					(v>(byte)1) { v--; d++;}}
+					(v>(byte)1) { v--; d++;}
+					}
 				}
 					
 				if(v==0) {
@@ -606,6 +607,11 @@ static class Checker{
 		}
 
 		public boolean cool() {
+			System.out.println("ss.size() (rem ships?): " + ss.size());
+			System.out.println("ss.keyset(): " + ss.keySet().toString());
+
+//			System.out.println("cp: "+cp );
+
 			return ss.size()== 0 && cp == 0 ;
 		}
 		
@@ -614,12 +620,18 @@ static class Checker{
 	public static boolean applyPlan(String grid, String solution){
 		boolean linkin = true;
 		String[] solutionArray  = solution.split(";");
+
 		System.out.println("solutionArray" + Arrays.toString(solutionArray));
+
 		String plan = solutionArray[0];
 		int blue = Integer.parseInt(solutionArray[1]);
+
 		System.out.println("death is " + blue);
+
 		int doors = Integer.parseInt(solutionArray[2]);
+
 		System.out.println("retrieved is " + doors);
+		System.out.println("--------------------");
 		
 		plan.replace(" ", "");
 		plan.replace("\n", "");
@@ -653,7 +665,8 @@ static class Checker{
 		}
 		Checker s = new	Checker(m, n, x, x00, x01, xyz, m4);
 		for (int i = 0; i < actions.length; i++) {
-		
+
+			System.out.println("Action: " + actions[i]);
 			switch (actions[i]) {
 			case "up":
 				linkin = s.f1(-1,0);
@@ -677,8 +690,11 @@ static class Checker{
 				linkin = s.f4();
 				break;
 			default: linkin = false; break;
-						
+
 			}
+
+			System.out.println("linkin (action validity?): " + linkin);
+
 
 			if(!linkin)
 				return false;
@@ -686,6 +702,8 @@ static class Checker{
 
 		System.out.println("deaths should be: " + s.d);
 		System.out.println("retrieved should be " + s.r);
+
+		System.out.println(s.cool());
 
 		return s.cool() && s.d==blue && s.r==doors;
 	}

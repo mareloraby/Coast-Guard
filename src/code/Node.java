@@ -279,6 +279,8 @@ public class Node {
         String res = "";
         Node n = this;
         while(n.parent!=null){
+            System.out.println();
+            System.out.println("currState: " + n.currentState);
             visualizeState(n.currentState);
             if(res.equals("")){
                 res = n.actionTaken + "";
