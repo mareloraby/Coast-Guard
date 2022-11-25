@@ -8,7 +8,7 @@ public class CoastGuard extends SearchProblem{
 
     private static ArrayList<Integer> emptyCells;
 
-    public static HashSet<String> prevStates = new HashSet<String>();
+    public static HashSet<String> prevStates;
 
     public static Deque<Node> BFQueue; //queue
     public static Stack<Node> DFQueue; //stack
@@ -113,6 +113,7 @@ public class CoastGuard extends SearchProblem{
     public static String solve( String grid, String strategy,  boolean visualize ){
 
 //        System.out.println(switchInputXY(grid));
+        prevStates = new HashSet<String>();
         String searchResult = solveSearchProblem(switchInputXY(grid),strategy);
 
         if(visualize){
@@ -577,6 +578,7 @@ public class CoastGuard extends SearchProblem{
 
             Node currNode = DFQueue.pop();
 
+            System.out.println("currNode: " + currNode.currentState);
             //check if it's the goal node
             if(isGoal(currNode)){
                 /*
@@ -607,6 +609,7 @@ public class CoastGuard extends SearchProblem{
 
             // get all child nodes of the current node
             ArrayList<Node> childrenOfNode = expandNode(currNode);
+
             if(childrenOfNode.size()>0) numExpandedNodes++;
 
             //add all nodes to Stack
