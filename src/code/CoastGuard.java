@@ -228,7 +228,9 @@ public class CoastGuard extends SearchProblem{
                 byte shY = Byte.parseByte(shipsLocations[i + 1]);
                 byte numPass = Byte.parseByte(shipsLocations[i + 2]);
 
-                gameBoard[shY][shX] = numPass + "sh" + (i / 3);
+                if(gameBoard[shY][shX]!=null)
+                    gameBoard[shY][shX] = "(c)"+numPass + "sh" + (i / 3);
+                else gameBoard[shY][shX] = numPass + "sh" + (i / 3);
                 i += 2;
             }
         }
@@ -244,7 +246,10 @@ public class CoastGuard extends SearchProblem{
                     byte wrY = Byte.parseByte(wrecksLocations[i + 1]);
                     byte wrDamage = Byte.parseByte(wrecksLocations[i + 2]);
 
-                    gameBoard[wrY][wrX] = wrDamage + "wr" + (i / 3);
+                    if(gameBoard[wrY][wrX] != null)
+                        gameBoard[wrY][wrX] = "(c)"+wrDamage + "wr" + (i / 3);
+                    else gameBoard[wrY][wrX] = wrDamage + "wr" + (i / 3);
+
                     i += 2;
                 }
 
@@ -571,7 +576,6 @@ public class CoastGuard extends SearchProblem{
         while(!DFQueue.isEmpty()){
 
             Node currNode = DFQueue.pop();
-
 
             //check if it's the goal node
             if(isGoal(currNode)){
