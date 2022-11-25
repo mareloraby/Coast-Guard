@@ -184,6 +184,9 @@ public class Node {
                 break;
 
             case PICKUP:
+                // revive dead person at pickup
+                deadPassengers--;
+
                 //get number of passengers of this cell's ship (cell at which the coast guard is currently standing on)
                 String [] updatedShipsArr = updatedShips.split(",");
                 int k=0;

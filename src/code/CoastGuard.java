@@ -112,7 +112,8 @@ public class CoastGuard extends SearchProblem{
 
     public static String solve( String grid, String strategy,  boolean visualize ){
 
-        String searchResult = solveSearchProblem(grid,strategy);
+        System.out.println(switchInputXY(grid));
+        String searchResult = solveSearchProblem(switchInputXY(grid),strategy);
 
         if(visualize){
 
@@ -129,7 +130,7 @@ public class CoastGuard extends SearchProblem{
 
 
 
-        return searchResult;
+        return searchResult.toLowerCase();
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
@@ -254,23 +255,23 @@ public class CoastGuard extends SearchProblem{
             byte remainingCapacity = Byte.parseByte(currStateArray[6]);
 
             //    * Remaining Passengers Counter  index 7
-            short remainingPassengers = Byte.parseByte(currStateArray[7]);
+            short remainingPassengers = Short.parseShort(currStateArray[7]);
 
             //    * Remaining Ships Counter  index 8
             //    * Remaining Boxes Counter  index 9
 
             //    * Dead passengers  index 10
-            short deadSoFar = Byte.parseByte(currStateArray[10]);
+            short deadSoFar = Short.parseShort(currStateArray[10]);
 
             //    * Retrieved boxes  index 11
-            short retrievedBoxes = Byte.parseByte(currStateArray[11]);
+            short retrievedBoxes = Short.parseShort(currStateArray[11]);
 
 
             System.out.println("Dead so far: " + deadSoFar + "  Retrieved boxes so far: " + retrievedBoxes);
         }
 
         printStringGrid(gameBoard);
-
+        System.out.println("##########################################################################################################");
     }
 
     // creates the initial state from generated grid
@@ -553,7 +554,8 @@ public class CoastGuard extends SearchProblem{
 
             // get all child nodes of the current node
             ArrayList<Node> childrenOfNode = expandNode(currNode);
-            numExpandedNodes++;
+
+            if(childrenOfNode.size()!=0) numExpandedNodes++;
 
 
             //add all nodes to BFQueue
@@ -700,6 +702,63 @@ public class CoastGuard extends SearchProblem{
         return start   +  (int)( Math.random() * (end-start+1) );
     }
 
+    private static String switchInputXY(String grid){
+
+        String [] parsedGrid =  grid.split(";");
+
+
+        //    * Grid dimensions index 0
+        String gridDimensionsString = parsedGrid[0];
+
+        //    * Max capacity  index 1
+        String maxCapacity = parsedGrid[1];
+
+        //    * Current Coast Guard Location index 2
+        String [] coastGuardLocation = parsedGrid[2].split(",");
+        // switched XY!
+        String guardY = coastGuardLocation[0];
+        String guardX = coastGuardLocation[1];
+
+        String coastGuardLocationString = guardX+","+guardY;
+
+
+        //    * Locations of all Stations  index 3
+        String [] stationLocations = parsedGrid[3].split(",");
+        String stationLocationsString = "";
+        for(int i = 0; i < stationLocations.length - 1; i++ ){
+            // switched XY!
+            String stY = stationLocations[i];
+            String stX = stationLocations[i+1];
+
+            stationLocationsString += stX+","+stY + ",";
+            i++;
+        }
+        stationLocationsString = stationLocationsString.substring(0, stationLocationsString.length() - 1);
+
+
+        //    * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
+        String [] shipsLocations = parsedGrid[4].split(",");
+        String shipsLocationsString = "";
+        for (int i = 0; i < shipsLocations.length - 2; i++) {
+            // switched XY!
+            String shY = shipsLocations[i];
+            String shX = shipsLocations[i + 1];
+            String numPass = shipsLocations[i + 2];
+
+            shipsLocationsString += shX+","+shY + "," + numPass +",";
+            i += 2;
+        }
+        shipsLocationsString = shipsLocationsString.substring(0, shipsLocationsString.length() - 1);
+
+
+
+        String gridString = gridDimensionsString + ";" + maxCapacity +";" + coastGuardLocationString +";" + stationLocationsString + ";" + shipsLocationsString+";";
+
+        return gridString;
+
+    }
+
+
     // Helper method to genGrid()
     private static int randomCell() {
         int cellIndex = random(0,emptyCells.size()-1);
@@ -711,7 +770,7 @@ public class CoastGuard extends SearchProblem{
     }
 
     // Helper method to visualizeState
-    public static void printStringGrid(String[][] array){
+    private static void printStringGrid(String[][] array){
 
         System.out.println(array[0].length + "x" + array.length);
 
