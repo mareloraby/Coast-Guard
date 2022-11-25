@@ -266,7 +266,7 @@ public class CoastGuard extends SearchProblem{
             short retrievedBoxes = Byte.parseByte(currStateArray[11]);
 
 
-            System.out.println("Dead so far: " + deadSoFar + "Retrieved boxes so far: " + retrievedBoxes);
+            System.out.println("Dead so far: " + deadSoFar + "  Retrieved boxes so far: " + retrievedBoxes);
         }
 
         printStringGrid(gameBoard);
@@ -748,6 +748,7 @@ public class CoastGuard extends SearchProblem{
         for (int j = 0; j < array[0].length-1; j++){
             System.out.print("---------+");
         }
+        System.out.println();
     }
 
 

@@ -2,6 +2,8 @@ package code;
 
 import java.util.ArrayList;
 
+import static code.CoastGuard.visualizeState;
+
 public class Node {
 
     /*
@@ -271,6 +273,7 @@ public class Node {
         String res = "";
         Node n = this;
         while(n.parent!=null){
+            visualizeState(n.currentState);
             if(res.equals("")){
                 res = n.actionTaken + "";
             }

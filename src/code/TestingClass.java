@@ -8,16 +8,19 @@ public class TestingClass {
 
     public static void main(String[] args) {
 
+
         CoastGuard costGuard = new CoastGuard();
 
-        String generated = costGuard.genGrid();
-        System.out.println(generated);
+//        String generated = costGuard.genGrid();
+//        String generated = "3,4;97;1,2;0,1;3,2,65;";
+
+        String generated = "3,4;97;2,1;1,0;2,3,65;";
+//        String generated = "7,5;40;2,3;3,6;1,1,10,4,5,90;";
+
+//        System.out.println(generated);
         costGuard.visualizeState(generated);
-//        System.out.println("Generated Grid: " + generated);
-//        System.out.println("Result: " + costGuard.solve(generated,"DF",false));
-//
-//        String [][] dumm = new String[2][2];
-//        System.out.println(dumm[0][1] == null);
+        System.out.println("Generated Grid: " + generated);
+        System.out.println("Result: " + costGuard.solve(generated,"BF",false));
 
 
 
