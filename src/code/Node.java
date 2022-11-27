@@ -212,6 +212,7 @@ public class Node {
                                 deadPassengers--;
                             }
 
+
                             remainingCapacity -= shipPassengers;
                             shipPassengers = 0;
                             remainingShips--;
