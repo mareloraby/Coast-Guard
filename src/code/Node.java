@@ -81,7 +81,7 @@ public class Node {
         //decrements passengers in ships and update passenger counts and wrecks
         String newWrecks = ""; //string to contain newly converted wrecks from ships
         int i=2;
-        while(i<shipsLocationsAndPassengers.length){
+        while(i<shipsLocationsAndPassengers.length && nextAction!=Actions.PICKUP){
             shipsLocationsAndPassengers[i] = (Byte.parseByte(shipsLocationsAndPassengers[i])-1) + "";
             remainingPassengers--;
             deadPassengers++;
@@ -126,7 +126,7 @@ public class Node {
 
             //increment black boxes count and remove expired ones
             int j=2;
-            while (j<wreckArray.length){
+            while (j<wreckArray.length && nextAction!=Actions.PICKUP){
                 wreckArray[j] = (Byte.parseByte(wreckArray[j])+1) + "";
                 if(Byte.parseByte(wreckArray[j])==20){ //expired box
                     remainingBoxes--;
@@ -193,10 +193,8 @@ public class Node {
                     if(Byte.parseByte(updatedShipsArr[k])==guardX && Byte.parseByte(updatedShipsArr[k+1])==guardY){ //this is the ship the guard is currently standing at
                         byte shipPassengers = Byte.parseByte(updatedShipsArr[k+2]);
                         if(shipPassengers>remainingCapacity){
-
                             shipPassengers -= remainingCapacity;
                             remainingCapacity = 0;
-
                             if(tempShips.equals("")){ //the first ship to encounter
                                 tempShips = updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + shipPassengers;
                             }
@@ -211,7 +209,6 @@ public class Node {
 //                               remainingPassengers++;
                                 deadPassengers--;
                             }
-
                             remainingCapacity -= shipPassengers;
                             shipPassengers = 0;
                             remainingShips--;
@@ -236,6 +233,9 @@ public class Node {
                     k+=3;
                 }
                 updatedShips = tempShips;
+
+
+
                 break;
 
             case RETRIEVE:

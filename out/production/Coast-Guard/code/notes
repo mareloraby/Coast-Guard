@@ -1,0 +1,7 @@
+At each time step -> subtract 1 passengers from each ship
+
+You reach your goal when there are no living passengers who are not rescued,
+there are no undamaged boxes which have not been retrieved, and the rescue boat is not
+carrying any passengers.
+
+remaining passengers and remaining (blackboxe) in grid
