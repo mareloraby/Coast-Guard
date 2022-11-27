@@ -8,7 +8,7 @@ import java.util.Queue;
 public abstract class SearchProblem{
 
     public static String solveSearchProblem(String grid, String strategy) {
-        return null;
+        return "";
     }
 
     public static boolean isGoal(Node node) {

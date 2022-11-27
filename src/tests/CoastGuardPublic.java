@@ -1,7 +1,9 @@
 package tests;
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -85,7 +87,7 @@ public class CoastGuardPublic {
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid9, solution));
 	}	
 
-	
+
 	@Test(timeout = 10000)
 	public void testb0() throws Exception {
 		String solution = CoastGuard.solve(grid0, "DF", false);
@@ -146,21 +148,21 @@ public class CoastGuardPublic {
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid10, solution));
 	}
 	
-	
+
 	@Test(timeout = 10000)
 	public void testc0() throws Exception {
 		String solution = CoastGuard.solve(grid0, "UC", false);
 		solution = solution.replace(" ", "");
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
-	
+
 	@Test(timeout = 10000)
 	public void testc1() throws Exception {
 		String solution = CoastGuard.solve(grid1, "UC", false);
 		solution = solution.replace(" ", "");
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid1, solution));
 	}
-	
+
 	@Test(timeout = 10000)
 	public void testc2() throws Exception {
 		String solution = CoastGuard.solve(grid2, "UC", false);
@@ -191,7 +193,7 @@ public class CoastGuardPublic {
 	public void testc7() throws Exception {
 		String solution = CoastGuard.solve(grid7, "UC", false);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid7, solution));
-	}	
+	}
 	@Test(timeout = 60000)
 	public void testc8() throws Exception {
 		String solution = CoastGuard.solve(grid8, "UC", false);
@@ -201,7 +203,7 @@ public class CoastGuardPublic {
 	public void testc9() throws Exception {
 		String solution = CoastGuard.solve(grid9, "UC", false);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid9, solution));
-	}	
+	}
 	@Test(timeout = 60000)
 	public void testc10() throws Exception {
 		String solution = CoastGuard.solve(grid10, "UC", false);
@@ -526,17 +528,19 @@ static class Checker{
 			mn();
 			return true;
 		}
-		boolean f2() {
+		boolean f2() { //on pickup
 
 			if(!ss.containsKey(x00+","+x01)) {
 				mn();
 				return false;
 			}
-			byte ts = ss.get(x00+","+x01);
+			byte ts = ss.get(x00+","+x01); //get people on ship
 			byte cc = (byte) (xc-cp);
+			System.out.println("cc: " + cc);
+			System.out.println("ts: " + ts);
 			if(cc>=ts) {
-				cp+=ts;
-				ss.replace(x00+","+x01, (byte)-100);
+				cp+=ts; //add to capacity?
+				ss.replace(x00+","+x01, (byte)-20); //-100 on pickup
 			}
 			else {
 				cp=xc;
@@ -546,6 +550,7 @@ static class Checker{
 			mn();
 			return true;
 		}
+
 		boolean f3() {
 
 			if(!is.contains(x00+","+x01)) {
@@ -576,19 +581,32 @@ static class Checker{
 		}
 		void mn() {
 			ArrayList<String> toclean = new ArrayList<String>();
+
+			System.out.println(ss.toString());
+
 			for (String k : ss.keySet()) {
 				byte v = ss.get(k);
-				if (v<=(byte)-1 && v>=(byte)-20) v++;else {
-					if (v==1) {v=(byte)-20;d++;}
+				if (v<=(byte)-1 && v>=(byte)-20) v++;
+				else {
+					if (v==1) {
+						v=(byte)-20;
+						d++;
+					}
 					else {
-					if 
-					(v>(byte)1) { v--; d++;}}
+					if (v>(byte)1) {
+						v--;
+						d++;
+					}
+					}
 				}
 					
 				if(v==0) {
 					toclean.add(k);
-				}else {
-				ss.replace(k, v);}
+				}
+				else
+				{
+					ss.replace(k, v);
+				}
 				
 			}
 			for (String c : toclean) {
@@ -604,6 +622,11 @@ static class Checker{
 		}
 
 		public boolean cool() {
+			System.out.println("ss.size() (rem?): " + ss.size());
+			System.out.println("ss.keyset(): " + ss.keySet().toString());
+
+			System.out.println("cp (shouldbe=0): "+cp );
+
 			return ss.size()== 0 && cp == 0 ;
 		}
 		
@@ -612,9 +635,14 @@ static class Checker{
 	public static boolean applyPlan(String grid, String solution){
 		boolean linkin = true;
 		String[] solutionArray  = solution.split(";");
+
+		System.out.println("solutionArray" + Arrays.toString(solutionArray));
+
 		String plan = solutionArray[0];
 		int blue = Integer.parseInt(solutionArray[1]);
 		int doors = Integer.parseInt(solutionArray[2]);
+
+
 		
 		plan.replace(" ", "");
 		plan.replace("\n", "");
@@ -648,7 +676,8 @@ static class Checker{
 		}
 		Checker s = new	Checker(m, n, x, x00, x01, xyz, m4);
 		for (int i = 0; i < actions.length; i++) {
-		
+
+			System.out.println("Action: " + actions[i]);
 			switch (actions[i]) {
 			case "up":
 				linkin = s.f1(-1,0);
@@ -672,12 +701,24 @@ static class Checker{
 				linkin = s.f4();
 				break;
 			default: linkin = false; break;
-						
+
 			}
+
+			System.out.println("linkin (action validity?): " + linkin);
+
 
 			if(!linkin)
 				return false;
 	}
+
+
+		System.out.println("death is " + blue);
+		System.out.println("retrieved is " + doors);
+		System.out.println("-");
+		System.out.println("deaths should be: " + s.d);
+		System.out.println("retrieved should be " + s.r);
+
+		System.out.println(s.cool());
 
 		return s.cool() && s.d==blue && s.r==doors;
 	}

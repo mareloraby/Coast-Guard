@@ -8,11 +8,12 @@ public class CoastGuard extends SearchProblem{
 
     private static ArrayList<Integer> emptyCells;
 
-    public static HashSet<String> prevStates = new HashSet<String>();
+    public static HashSet<String> prevStates;
 
     public static Deque<Node> BFQueue; //queue
-    public static Deque<Node> DFQueue; //stack
+    public static Stack<Node> DFQueue; //stack
     public static Deque<Node> IDQueue; //stack
+    public static PriorityQueue<Node> ucQueue ;
 
 
 
@@ -112,7 +113,9 @@ public class CoastGuard extends SearchProblem{
 
     public static String solve( String grid, String strategy,  boolean visualize ){
 
-        String searchResult = solveSearchProblem(grid,strategy);
+//        System.out.println(switchInputXY(grid));
+        prevStates = new HashSet<String>();
+        String searchResult = solveSearchProblem(switchInputXY(grid),strategy);
 
         if(visualize){
 
@@ -129,7 +132,7 @@ public class CoastGuard extends SearchProblem{
 
 
 
-        return searchResult;
+        return searchResult.toLowerCase();
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
@@ -151,13 +154,17 @@ public class CoastGuard extends SearchProblem{
                 BFQueue.add(rootNode);
                 return BF();
             case "DF":
-                DFQueue = new ArrayDeque<>();
+                DFQueue = new Stack<Node>();
                 DFQueue.push(rootNode);
                 return DF();
             case "ID":
-                IDQueue = new ArrayDeque<>();
+                IDQueue = new ArrayDeque<Node>();
                 IDQueue.push(rootNode);
                 return ID();
+            case "UC":
+                ucQueue = new PriorityQueue<Node>((x,y)->(calculatePathCostUC(x)-calculatePathCostUC(y)));
+                ucQueue.add(rootNode);
+                return UC();
             case "GR1":;
             case "GR2":;
             case "AS1":;
@@ -213,6 +220,13 @@ public class CoastGuard extends SearchProblem{
             byte stX = Byte.parseByte(stationLocations[i]);
             byte stY = Byte.parseByte(stationLocations[i+1]);
             gameBoard[stY][stX] = "st"+(i/2);
+
+            if(stY == guardY && stX == guardX) {
+                gameBoard[stY][stX] = "(c)st" + (i / 2);
+            }
+            else gameBoard[stY][stX] = "st"+(i/2);
+
+
             i++;
 
         }
@@ -227,7 +241,9 @@ public class CoastGuard extends SearchProblem{
                 byte shY = Byte.parseByte(shipsLocations[i + 1]);
                 byte numPass = Byte.parseByte(shipsLocations[i + 2]);
 
-                gameBoard[shY][shX] = numPass + "sh" + (i / 3);
+                if(gameBoard[shY][shX]!=null)
+                    gameBoard[shY][shX] = "(c)"+numPass + "sh" + (i / 3);
+                else gameBoard[shY][shX] = numPass + "sh" + (i / 3);
                 i += 2;
             }
         }
@@ -243,7 +259,10 @@ public class CoastGuard extends SearchProblem{
                     byte wrY = Byte.parseByte(wrecksLocations[i + 1]);
                     byte wrDamage = Byte.parseByte(wrecksLocations[i + 2]);
 
-                    gameBoard[wrY][wrX] = wrDamage + "wr" + (i / 3);
+                    if(gameBoard[wrY][wrX] != null)
+                        gameBoard[wrY][wrX] = "(c)"+wrDamage + "wr" + (i / 3);
+                    else gameBoard[wrY][wrX] = wrDamage + "wr" + (i / 3);
+
                     i += 2;
                 }
 
@@ -254,23 +273,22 @@ public class CoastGuard extends SearchProblem{
             byte remainingCapacity = Byte.parseByte(currStateArray[6]);
 
             //    * Remaining Passengers Counter  index 7
-            short remainingPassengers = Byte.parseByte(currStateArray[7]);
+            short remainingPassengers = Short.parseShort(currStateArray[7]);
 
             //    * Remaining Ships Counter  index 8
             //    * Remaining Boxes Counter  index 9
 
             //    * Dead passengers  index 10
-            short deadSoFar = Byte.parseByte(currStateArray[10]);
+            short deadSoFar = Short.parseShort(currStateArray[10]);
 
             //    * Retrieved boxes  index 11
-            short retrievedBoxes = Byte.parseByte(currStateArray[11]);
-
+            short retrievedBoxes = Short.parseShort(currStateArray[11]);
 
             System.out.println("Dead so far: " + deadSoFar + "  Retrieved boxes so far: " + retrievedBoxes);
         }
 
         printStringGrid(gameBoard);
-
+        System.out.println("##########################################################################################################");
     }
 
     // creates the initial state from generated grid
@@ -432,7 +450,7 @@ public class CoastGuard extends SearchProblem{
             }
             j+=3;
         }
-        if(onShip && shipPassengers>1 && remainingCapacity>0  &&
+        if(onShip && shipPassengers>0 && remainingCapacity>0  &&
                 (prevAction==Actions.UP || prevAction==Actions.DOWN || prevAction==Actions.LEFT || prevAction==Actions.RIGHT || prevAction==null)){
             String nextState = n.generateNextState(currState, Actions.PICKUP);
             if(!(prevStates.contains(nextState))){
@@ -546,14 +564,15 @@ public class CoastGuard extends SearchProblem{
                 String deaths = currNodeStateArray[10];
                 String retrieved = currNodeStateArray[11];
 
-
+                System.out.println(plan);
                 return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
 
             }
 
             // get all child nodes of the current node
             ArrayList<Node> childrenOfNode = expandNode(currNode);
-            numExpandedNodes++;
+
+            if(childrenOfNode.size()!=0) numExpandedNodes++;
 
 
             //add all nodes to BFQueue
@@ -561,16 +580,16 @@ public class CoastGuard extends SearchProblem{
 
         }
 
-        return "";
+        return "fail";
     }
 
     public static String DF(){
-
 
         while(!DFQueue.isEmpty()){
 
             Node currNode = DFQueue.pop();
 
+            System.out.println("currNode: " + currNode.currentState);
             //check if it's the goal node
             if(isGoal(currNode)){
                 /*
@@ -601,16 +620,18 @@ public class CoastGuard extends SearchProblem{
 
             // get all child nodes of the current node
             ArrayList<Node> childrenOfNode = expandNode(currNode);
-            numExpandedNodes++;
 
-            //add all nodes to Queue
+            if(childrenOfNode.size()>0) numExpandedNodes++;
+
+            //add all nodes to Stack
             for (Node ni : childrenOfNode){
                 DFQueue.push(ni);
+//                DFQueue.addLast(ni);
             }
 
         }
 
-        return "";
+        return "fail";
     }
 
     public static String ID(){
@@ -688,8 +709,51 @@ public class CoastGuard extends SearchProblem{
         return "";
     }
 
+    public String GR2(){
+        return "";
+    }
+
     public String AS1(){
         return "";
+    }
+
+    public String AS2(){
+        return "";
+    }
+
+    public static String UC(){
+
+        while(!ucQueue.isEmpty())
+        {
+            Node currNode = (Node) ucQueue.poll();
+
+
+
+            if(isGoal(currNode)){
+
+                String [] currNodeStateArray = currNode.currentState.split(";");
+                String plan = currNode.getAncestors();
+                String deaths = currNodeStateArray[10];
+                String retrieved = currNodeStateArray[11];
+
+                return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
+
+            }
+
+
+            // get all child nodes of the current node
+            ArrayList<Node> childrenOfNode = expandNode(currNode);
+
+            if(childrenOfNode.size()>0) numExpandedNodes++;
+
+            //add all nodes to Stack
+            for (Node ni : childrenOfNode){
+                ucQueue.add(ni);
+            }
+
+
+        }
+        return "fail";
     }
 
     // ---------------------------------------------------    Helper Methods:    ---------------------------------------------------
@@ -699,6 +763,63 @@ public class CoastGuard extends SearchProblem{
     private static int random(int start,int end) {
         return start   +  (int)( Math.random() * (end-start+1) );
     }
+
+    private static String switchInputXY(String grid){
+
+        String [] parsedGrid =  grid.split(";");
+
+
+        //    * Grid dimensions index 0
+        String gridDimensionsString = parsedGrid[0];
+
+        //    * Max capacity  index 1
+        String maxCapacity = parsedGrid[1];
+
+        //    * Current Coast Guard Location index 2
+        String [] coastGuardLocation = parsedGrid[2].split(",");
+        // switched XY!
+        String guardY = coastGuardLocation[0];
+        String guardX = coastGuardLocation[1];
+
+        String coastGuardLocationString = guardX+","+guardY;
+
+
+        //    * Locations of all Stations  index 3
+        String [] stationLocations = parsedGrid[3].split(",");
+        String stationLocationsString = "";
+        for(int i = 0; i < stationLocations.length - 1; i++ ){
+            // switched XY!
+            String stY = stationLocations[i];
+            String stX = stationLocations[i+1];
+
+            stationLocationsString += stX+","+stY + ",";
+            i++;
+        }
+        stationLocationsString = stationLocationsString.substring(0, stationLocationsString.length() - 1);
+
+
+        //    * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
+        String [] shipsLocations = parsedGrid[4].split(",");
+        String shipsLocationsString = "";
+        for (int i = 0; i < shipsLocations.length - 2; i++) {
+            // switched XY!
+            String shY = shipsLocations[i];
+            String shX = shipsLocations[i + 1];
+            String numPass = shipsLocations[i + 2];
+
+            shipsLocationsString += shX+","+shY + "," + numPass +",";
+            i += 2;
+        }
+        shipsLocationsString = shipsLocationsString.substring(0, shipsLocationsString.length() - 1);
+
+
+
+        String gridString = gridDimensionsString + ";" + maxCapacity +";" + coastGuardLocationString +";" + stationLocationsString + ";" + shipsLocationsString+";";
+
+        return gridString;
+
+    }
+
 
     // Helper method to genGrid()
     private static int randomCell() {
@@ -711,7 +832,7 @@ public class CoastGuard extends SearchProblem{
     }
 
     // Helper method to visualizeState
-    public static void printStringGrid(String[][] array){
+    private static void printStringGrid(String[][] array){
 
         System.out.println(array[0].length + "x" + array.length);
 
@@ -750,6 +871,23 @@ public class CoastGuard extends SearchProblem{
         }
         System.out.println();
     }
+
+    // path cost for UC
+    public static int calculatePathCostUC(Node n){
+
+        String [] pathCost = n.pathCost.split(","); // deathSoFar, retrievedBoxes
+
+        int deathSoFar = Integer.parseInt(pathCost[0]);
+        short retrievedBoxes = Short.parseShort(pathCost[1]);
+
+        // minimize deaths and maximize retrieved boxes
+        //  2*deathSoFar - retrievedBoxes
+
+        return (2*deathSoFar) - retrievedBoxes;
+
+    }
+
+
 
 
 }
