@@ -528,17 +528,19 @@ static class Checker{
 			mn();
 			return true;
 		}
-		boolean f2() {
+		boolean f2() { //on pickup
 
 			if(!ss.containsKey(x00+","+x01)) {
 				mn();
 				return false;
 			}
-			byte ts = ss.get(x00+","+x01);
+			byte ts = ss.get(x00+","+x01); //get people on ship
 			byte cc = (byte) (xc-cp);
+			System.out.println("cc: " + cc);
+			System.out.println("ts: " + ts);
 			if(cc>=ts) {
-				cp+=ts;
-				ss.replace(x00+","+x01, (byte)-100);
+				cp+=ts; //add to capacity?
+				ss.replace(x00+","+x01, (byte)-20); //-100 on pickup
 			}
 			else {
 				cp=xc;
@@ -548,6 +550,7 @@ static class Checker{
 			mn();
 			return true;
 		}
+
 		boolean f3() {
 
 			if(!is.contains(x00+","+x01)) {
@@ -578,20 +581,32 @@ static class Checker{
 		}
 		void mn() {
 			ArrayList<String> toclean = new ArrayList<String>();
+
+			System.out.println(ss.toString());
+
 			for (String k : ss.keySet()) {
 				byte v = ss.get(k);
-				if (v<=(byte)-1 && v>=(byte)-20) v++;else {
-					if (v==1) {v=(byte)-20;d++;}
+				if (v<=(byte)-1 && v>=(byte)-20) v++;
+				else {
+					if (v==1) {
+						v=(byte)-20;
+						d++;
+					}
 					else {
-					if 
-					(v>(byte)1) { v--; d++;}
+					if (v>(byte)1) {
+						v--;
+						d++;
+					}
 					}
 				}
 					
 				if(v==0) {
 					toclean.add(k);
-				}else {
-				ss.replace(k, v);}
+				}
+				else
+				{
+					ss.replace(k, v);
+				}
 				
 			}
 			for (String c : toclean) {
@@ -607,10 +622,10 @@ static class Checker{
 		}
 
 		public boolean cool() {
-			System.out.println("ss.size() (rem ships?): " + ss.size());
+			System.out.println("ss.size() (rem?): " + ss.size());
 			System.out.println("ss.keyset(): " + ss.keySet().toString());
 
-//			System.out.println("cp: "+cp );
+			System.out.println("cp (shouldbe=0): "+cp );
 
 			return ss.size()== 0 && cp == 0 ;
 		}
@@ -625,13 +640,9 @@ static class Checker{
 
 		String plan = solutionArray[0];
 		int blue = Integer.parseInt(solutionArray[1]);
-
-		System.out.println("death is " + blue);
-
 		int doors = Integer.parseInt(solutionArray[2]);
 
-		System.out.println("retrieved is " + doors);
-		System.out.println("--------------------");
+
 		
 		plan.replace(" ", "");
 		plan.replace("\n", "");
@@ -700,6 +711,10 @@ static class Checker{
 				return false;
 	}
 
+
+		System.out.println("death is " + blue);
+		System.out.println("retrieved is " + doors);
+		System.out.println("-");
 		System.out.println("deaths should be: " + s.d);
 		System.out.println("retrieved should be " + s.r);
 

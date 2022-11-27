@@ -162,9 +162,9 @@ public class CoastGuard extends SearchProblem{
                 IDQueue.push(rootNode);
                 return ID();
             case "UC":
-//                ucQueue = new PriorityQueue<Node>((x,y)->(x.pathCost-y.pathCost));
-//                ucQueue.add(rootNode);
-//                return UC();
+                ucQueue = new PriorityQueue<Node>((x,y)->(calculatePathCostUC(x)-calculatePathCostUC(y)));
+                ucQueue.add(rootNode);
+                return UC();
             case "GR1":;
             case "GR2":;
             case "AS1":;
@@ -220,6 +220,13 @@ public class CoastGuard extends SearchProblem{
             byte stX = Byte.parseByte(stationLocations[i]);
             byte stY = Byte.parseByte(stationLocations[i+1]);
             gameBoard[stY][stX] = "st"+(i/2);
+
+            if(stY == guardY && stX == guardX) {
+                gameBoard[stY][stX] = "(c)st" + (i / 2);
+            }
+            else gameBoard[stY][stX] = "st"+(i/2);
+
+
             i++;
 
         }
@@ -276,7 +283,6 @@ public class CoastGuard extends SearchProblem{
 
             //    * Retrieved boxes  index 11
             short retrievedBoxes = Short.parseShort(currStateArray[11]);
-
 
             System.out.println("Dead so far: " + deadSoFar + "  Retrieved boxes so far: " + retrievedBoxes);
         }
@@ -703,35 +709,52 @@ public class CoastGuard extends SearchProblem{
         return "";
     }
 
+    public String GR2(){
+        return "";
+    }
+
     public String AS1(){
         return "";
     }
 
-//    public static String UC(){
-//
-//
-//        PriorityQueue<Node> pq = new PriorityQueue<Node>((x,y)->(x.pathCost-y.pathCost));// UCS
-//        pq.add(initNode);
-//        while(!pq.isEmpty())
-//        {
-//            Node currentNode = (Node) pq.poll();
-//
-//
-//            boolean isGoal = problem.goalTest(currentNode.state);
-//            if(isGoal)
-//                return buildPath(currentNode,visualize);
-//
-//            LinkedList<Node> nodes = expand(problem, currentNode);
-//
-//            for(Node node: nodes) {
-//                pq.add(node);
-//            }
-//
-//
-//        }
-//        return "Fail";
-//    }
+    public String AS2(){
+        return "";
+    }
 
+    public static String UC(){
+
+        while(!ucQueue.isEmpty())
+        {
+            Node currNode = (Node) ucQueue.poll();
+
+
+
+            if(isGoal(currNode)){
+
+                String [] currNodeStateArray = currNode.currentState.split(";");
+                String plan = currNode.getAncestors();
+                String deaths = currNodeStateArray[10];
+                String retrieved = currNodeStateArray[11];
+
+                return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
+
+            }
+
+
+            // get all child nodes of the current node
+            ArrayList<Node> childrenOfNode = expandNode(currNode);
+
+            if(childrenOfNode.size()>0) numExpandedNodes++;
+
+            //add all nodes to Stack
+            for (Node ni : childrenOfNode){
+                ucQueue.add(ni);
+            }
+
+
+        }
+        return "fail";
+    }
 
     // ---------------------------------------------------    Helper Methods:    ---------------------------------------------------
 
@@ -848,6 +871,23 @@ public class CoastGuard extends SearchProblem{
         }
         System.out.println();
     }
+
+    // path cost for UC
+    public static int calculatePathCostUC(Node n){
+
+        String [] pathCost = n.pathCost.split(","); // deathSoFar, retrievedBoxes
+
+        int deathSoFar = Integer.parseInt(pathCost[0]);
+        short retrievedBoxes = Short.parseShort(pathCost[1]);
+
+        // minimize deaths and maximize retrieved boxes
+        //  2*deathSoFar - retrievedBoxes
+
+        return (2*deathSoFar) - retrievedBoxes;
+
+    }
+
+
 
 
 }

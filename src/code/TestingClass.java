@@ -12,14 +12,15 @@ public class TestingClass {
         CoastGuard costGuard = new CoastGuard();
 
 //        String generated = costGuard.genGrid();
-//        String generated = "2,2;30;1,0;0,0;1,1,20;";
+        String generated = "2,2;30;1,0;0,0;1,1,20;";
 //        String generated = "3,4;97;1,2;0,1;3,2,65;";
 //        String generated = "3,4;97;2,1;1,0;2,3,65;";
 //        String generated = "7,5;40;2,3;3,6;1,1,10,4,5,90;";
-        String generated = "5,6;50;0,1;0,4,3,3;1,1,90;";
+//        String generated = "5,6;50;0,1;0,4,3,3;1,1,90;";
 
 //        System.out.println(generated);
-        System.out.println("Generated Grid: " + generated);
+//        System.out.println("Generated Grid: " + generated);
+        System.out.println("Result: " + costGuard.solve(generated,"UC",false));
         System.out.println("Result: " + costGuard.solve(generated,"DF",false));
 
 

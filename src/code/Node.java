@@ -130,6 +130,7 @@ public class Node {
                 wreckArray[j] = (Byte.parseByte(wreckArray[j])+1) + "";
                 if(Byte.parseByte(wreckArray[j])==20){ //expired box
                     remainingBoxes--;
+                    //ask rowan here
                 }
                 else{ // non expired box
                     if(updatedWrecks.equals("")){ //first wreck
@@ -184,7 +185,6 @@ public class Node {
                 break;
 
             case PICKUP:
-
                 //get number of passengers of this cell's ship (cell at which the coast guard is currently standing on)
                 String [] updatedShipsArr = updatedShips.split(",");
                 int k=0;
@@ -193,6 +193,7 @@ public class Node {
                     if(Byte.parseByte(updatedShipsArr[k])==guardX && Byte.parseByte(updatedShipsArr[k+1])==guardY){ //this is the ship the guard is currently standing at
                         byte shipPassengers = Byte.parseByte(updatedShipsArr[k+2]);
                         if(shipPassengers>remainingCapacity){
+
                             shipPassengers -= remainingCapacity;
                             remainingCapacity = 0;
 
@@ -210,6 +211,7 @@ public class Node {
                                 deadPassengers--;
 
                             remainingCapacity -= shipPassengers;
+                            shipPassengers = 0;
                             remainingShips--;
                             remainingBoxes++;
                             if(updatedWrecks.equals("$")){
@@ -279,9 +281,13 @@ public class Node {
         String res = "";
         Node n = this;
         while(n.parent!=null){
+
             System.out.println();
             System.out.println("currState: " + n.currentState);
+            System.out.println("Action Taken: "+ n.actionTaken);
+
             visualizeState(n.currentState);
+
             if(res.equals("")){
                 res = n.actionTaken + "";
             }
