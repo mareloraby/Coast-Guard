@@ -189,7 +189,7 @@ public class Node {
                 String [] updatedShipsArr = updatedShips.split(",");
                 int k=0;
                 String tempShips = "";
-                while(k<updatedShipsArr.length){
+                while(k<updatedShipsArr.length && updatedShipsArr.length>1){
                     if(Byte.parseByte(updatedShipsArr[k])==guardX && Byte.parseByte(updatedShipsArr[k+1])==guardY){ //this is the ship the guard is currently standing at
                         byte shipPassengers = Byte.parseByte(updatedShipsArr[k+2]);
                         if(shipPassengers>remainingCapacity){
@@ -207,8 +207,10 @@ public class Node {
                         else{ //all ship's passengers will be saved and the ship will be a wreck with a black box of count 0
 
                             //revive dead one
-                            if(shipPassengers!=remainingCapacity)
+                            if(shipPassengers!=remainingCapacity) {
+//                               remainingPassengers++;
                                 deadPassengers--;
+                            }
 
                             remainingCapacity -= shipPassengers;
                             shipPassengers = 0;
