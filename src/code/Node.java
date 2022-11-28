@@ -322,7 +322,7 @@ public class Node {
             System.out.println("currState: " + n.currentState);
             System.out.println("Action Taken: "+ n.actionTaken);
 
-            //visualizeState(n.currentState);
+            visualizeState(n.currentState);
 
             if(res.equals("")){
                 res = n.actionTaken + "";
