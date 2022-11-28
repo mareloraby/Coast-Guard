@@ -12,7 +12,7 @@ public class TestingClass {
         CoastGuard costGuard = new CoastGuard();
 
 //        String generated = costGuard.genGrid();
-        String generated = "2,2;30;1,0;0,0;1,1,20;";
+//        String generated = "2,2;30;1,0;0,0;1,1,20;";
 //        String generated = "3,4;97;1,2;0,1;3,2,65;";
 //        String generated = "3,4;97;2,1;1,0;2,3,65;";
 //        String generated = "7,5;40;2,3;3,6;1,1,10,4,5,90;";
@@ -20,8 +20,8 @@ public class TestingClass {
 
 //        System.out.println(generated);
 //        System.out.println("Generated Grid: " + generated);
-        System.out.println("Result: " + costGuard.solve(generated,"UC",false));
-        System.out.println("Result: " + costGuard.solve(generated,"DF",false));
+//        System.out.println("Result: " + costGuard.solve(generated,"UC",false));
+//        System.out.println("Result: " + costGuard.solve(generated,"DF",false));
 
 
 
@@ -44,8 +44,8 @@ public class TestingClass {
         // initial state: no wrecks
         // wreck-> append
 //
-//        String state = "5,5;50;1,0;1,0,3,4;#;$;50;0;0;0;5;3";
-//        Node n = new Node(state, null, "0,0", null, 0);
+        String state = "5,5;50;1,0;1,0,3,4;4,4,60;$;30;60;0;0;5;3";
+        Node n = new Node(state, null, "0,0", null, 0);
 //        System.out.println(costGuard.isGoal(n));
 
 
@@ -54,7 +54,7 @@ public class TestingClass {
 //        for(Node ni : returned_nodes){
 //            System.out.println("Action: " + ni.actionTaken + " CurrentState: " +  ni.currentState);
 //        }
-//        System.out.println(n.generateNextState(state, Actions.UP));
+        System.out.println(n.generateNextState(state, Actions.DROP));
 
 //        System.out.println(null == Actions.DOWN);
 
