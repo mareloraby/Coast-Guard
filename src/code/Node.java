@@ -126,7 +126,7 @@ public class Node {
 
             //increment black boxes count and remove expired ones
             int j=2;
-            while (j<wreckArray.length && nextAction!=Actions.PICKUP){
+            while (j<wreckArray.length){
                 wreckArray[j] = (Byte.parseByte(wreckArray[j])+1) + "";
                 if(Byte.parseByte(wreckArray[j])==20){ //expired box
                     remainingBoxes--;
@@ -186,55 +186,89 @@ public class Node {
 
             case PICKUP:
                 //get number of passengers of this cell's ship (cell at which the coast guard is currently standing on)
-                String [] updatedShipsArr = updatedShips.split(",");
+                String [] updatedShipsArr = shipsLocationsAndPassengers;
                 int k=0;
                 String tempShips = "";
-                while(k<updatedShipsArr.length && updatedShipsArr.length>1){
+                String shipWrecks = "";
+                while(k<updatedShipsArr.length){
+                    byte shipPassengers = Byte.parseByte(updatedShipsArr[k+2]);
                     if(Byte.parseByte(updatedShipsArr[k])==guardX && Byte.parseByte(updatedShipsArr[k+1])==guardY){ //this is the ship the guard is currently standing at
-                        byte shipPassengers = Byte.parseByte(updatedShipsArr[k+2]);
                         if(shipPassengers>remainingCapacity){
-                            shipPassengers -= remainingCapacity;
+                            shipPassengers -= remainingCapacity+1;
                             remainingCapacity = 0;
-                            if(tempShips.equals("")){ //the first ship to encounter
-                                tempShips = updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + shipPassengers;
+                            remainingPassengers--;
+                            deadPassengers++;
+                            if(shipPassengers==0){
+                                remainingBoxes++;
+                                if(shipWrecks.equals("")){
+                                    shipWrecks = updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + 0;
+                                }
+                                else{
+                                    shipWrecks+= "," + updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + 0;
+                                }
                             }
-                            else{
-                                tempShips += "," + updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + shipPassengers;
+                            else {
+                                if (tempShips.equals("")) { //the first ship to encounter
+                                    tempShips = updatedShipsArr[k] + "," + updatedShipsArr[k + 1] + "," + shipPassengers;
+                                } else {
+                                    tempShips += "," + updatedShipsArr[k] + "," + updatedShipsArr[k + 1] + "," + shipPassengers;
+                                }
                             }
                         }
                         else{ //all ship's passengers will be saved and the ship will be a wreck with a black box of count 0
 
-                            //revive dead one
-                            if(shipPassengers!=remainingCapacity) {
-//                               remainingPassengers++;
-                                deadPassengers--;
-                            }
+//                            //revive dead one
+//                            if(shipPassengers!=remainingCapacity) {
+////                               remainingPassengers++;
+//                                deadPassengers--;
+//                            }
                             remainingCapacity -= shipPassengers;
                             shipPassengers = 0;
                             remainingShips--;
                             remainingBoxes++;
-                            if(updatedWrecks.equals("$")){
-                                updatedWrecks = updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + 0;
+                            if(shipWrecks.equals("")){
+                                shipWrecks = updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + 0;
                             }
                             else{
-                               updatedWrecks+= "," + updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + 0;
+                                shipWrecks+= "," + updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + 0;
                             }
                         }
                     }
                     else{ //this is not the ship the guard is currently standing at
-                        if(tempShips.equals("")){ //the first ship to encpunter
-                            tempShips = updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + updatedShipsArr[k+2];
+                        remainingPassengers--;
+                        deadPassengers++;
+                        shipPassengers--;
+                        if(shipPassengers==0){
+                            remainingBoxes++;
+                            if(shipWrecks.equals("")){
+                                shipWrecks = updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + 0;
+                            }
+                            else{
+                                shipWrecks+= "," + updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + 0;
+                            }
                         }
-                        else{
-                            tempShips += "," + updatedShipsArr[k] + "," + updatedShipsArr[k+1] + "," + updatedShipsArr[k+2];
+                        else {
+                            if (tempShips.equals("")) { //the first ship to encounter
+                                tempShips = updatedShipsArr[k] + "," + updatedShipsArr[k + 1] + "," + shipPassengers;
+                            } else {
+                                tempShips += "," + updatedShipsArr[k] + "," + updatedShipsArr[k + 1] + "," + shipPassengers;
+                            }
                         }
                     }
 
                     k+=3;
                 }
                 updatedShips = tempShips;
-
-
+                if(!(shipWrecks.equals(""))){
+                    if(updatedWrecks.equals("$")){
+                        updatedWrecks = shipWrecks;
+                    }
+                    else{
+                        updatedWrecks += "," + shipWrecks;
+                    }
+                }
+//                System.out.println("ships updated: " + updatedShips);
+//                System.out.println("updated wrecks: " + updatedWrecks);
 
                 break;
 

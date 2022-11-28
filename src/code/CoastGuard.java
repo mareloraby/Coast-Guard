@@ -539,6 +539,7 @@ public class CoastGuard extends SearchProblem{
         while(!BFQueue.isEmpty()){
 
             Node currNode = BFQueue.poll();
+            numExpandedNodes++;
 
             //check if it's the goal node
             if(isGoal(currNode)){
@@ -572,11 +573,12 @@ public class CoastGuard extends SearchProblem{
             // get all child nodes of the current node
             ArrayList<Node> childrenOfNode = expandNode(currNode);
 
-            if(childrenOfNode.size()!=0) numExpandedNodes++;
+//            if(childrenOfNode.size()!=0) numExpandedNodes++;
 
 
             //add all nodes to BFQueue
-            BFQueue.addAll(childrenOfNode);
+            if(childrenOfNode.size() !=0){
+            BFQueue.addAll(childrenOfNode);}
 
         }
 
