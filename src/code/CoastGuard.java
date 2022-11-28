@@ -15,6 +15,7 @@ public class CoastGuard extends SearchProblem{
     public static Deque<Node> IDQueue; //stack
     public static PriorityQueue<Node> ucQueue ;
 
+    public static Stack<Node> IDQueue2;
 
 
     public static String genGrid(){
@@ -638,13 +639,16 @@ public class CoastGuard extends SearchProblem{
 
     public static String ID(){
         int limit = 0;
-        Node root = IDQueue.peek();
+        Node root = IDQueue.poll();
 
+//        System.out.println(root.currentState);
         while(true){
-
+//            System.out.println("new iteration limit: " + limit);
             while (!IDQueue.isEmpty()) {
-
+//                System.out.println("queue size: " + IDQueue.size());
                 Node currNode = IDQueue.pop();
+//                System.out.println(currNode.depth);
+                numExpandedNodes++;
 
                 //check if it's the goal node
                 if (isGoal(currNode)) {
@@ -675,18 +679,18 @@ public class CoastGuard extends SearchProblem{
 
                 }
 
+
                 if (currNode.depth < limit ) {
 
+//                    System.out.println(currNode.currentState + " " + currNode.parent + " " + currNode.pathCost + " " + currNode.actionTaken + " " + currNode.depth);
+//                    System.out.println("here");
                     // get all child nodes of the current node
                     ArrayList<Node> childrenOfNode = expandNode(currNode);
 
                     if(childrenOfNode.size()>0){ // there is children
-
-                        numExpandedNodes++;
-
                         //add all nodes to Queue
                         for (Node ni : childrenOfNode) {
-                            IDQueue.push(ni);
+                            IDQueue.addLast(ni);
                         }
 
                     }
@@ -697,13 +701,10 @@ public class CoastGuard extends SearchProblem{
 
 
             limit++;
-            IDQueue.push(root);
+            IDQueue.addLast(root);
+            prevStates = new HashSet<String >();
 
         }
-
-
-
-
 
     }
 
