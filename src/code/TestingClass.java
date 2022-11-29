@@ -23,9 +23,10 @@ public class TestingClass {
 //        String generated = "5,6;50;0,1;0,4,3,3;1,1,90;";
 
 //        System.out.println(generated);
-        System.out.println("Generated Grid: " + generated);
-        System.out.println("Result: " + costGuard.solve(generated,"ID",false));
+//        System.out.println("Generated Grid: " + generated);
+//        System.out.println("Result: " + costGuard.solve(generated,"ID",false));
 //        System.out.println("Result: " + costGuard.solve(generated,"DF",false));
+
 
 
 

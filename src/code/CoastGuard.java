@@ -163,7 +163,7 @@ public class CoastGuard extends SearchProblem{
                 IDQueue.push(rootNode);
                 return ID();
             case "UC":
-                ucQueue = new PriorityQueue<Node>((x,y)->(calculatePathCostUC(x)-calculatePathCostUC(y)));
+                ucQueue = new PriorityQueue<Node>();
                 ucQueue.add(rootNode);
                 return UC();
             case "GR1":;
@@ -591,6 +591,7 @@ public class CoastGuard extends SearchProblem{
         while(!DFQueue.isEmpty()){
 
             Node currNode = DFQueue.pop();
+            numExpandedNodes++;
 
             System.out.println("currNode: " + currNode.currentState);
             //check if it's the goal node
@@ -624,7 +625,7 @@ public class CoastGuard extends SearchProblem{
             // get all child nodes of the current node
             ArrayList<Node> childrenOfNode = expandNode(currNode);
 
-            if(childrenOfNode.size()>0) numExpandedNodes++;
+//            if(childrenOfNode.size()>0) numExpandedNodes++;
 
             //add all nodes to Stack
             for (Node ni : childrenOfNode){
@@ -729,8 +730,8 @@ public class CoastGuard extends SearchProblem{
         while(!ucQueue.isEmpty())
         {
             Node currNode = (Node) ucQueue.poll();
-
-
+//            System.out.println("curr path cost " + currNode.pathCost);
+            numExpandedNodes++;
 
             if(isGoal(currNode)){
 
@@ -747,7 +748,7 @@ public class CoastGuard extends SearchProblem{
             // get all child nodes of the current node
             ArrayList<Node> childrenOfNode = expandNode(currNode);
 
-            if(childrenOfNode.size()>0) numExpandedNodes++;
+//            if(childrenOfNode.size()>0) numExpandedNodes++;
 
             //add all nodes to Stack
             for (Node ni : childrenOfNode){
@@ -876,19 +877,19 @@ public class CoastGuard extends SearchProblem{
     }
 
     // path cost for UC
-    public static int calculatePathCostUC(Node n){
-
-        String [] pathCost = n.pathCost.split(","); // deathSoFar, retrievedBoxes
-
-        int deathSoFar = Integer.parseInt(pathCost[0]);
-        short retrievedBoxes = Short.parseShort(pathCost[1]);
-
-        // minimize deaths and maximize retrieved boxes
-        //  2*deathSoFar - retrievedBoxes
-
-        return (2*deathSoFar) - retrievedBoxes;
-
-    }
+//    public static int calculatePathCostUC(Node n){
+//
+//        String [] pathCost = n.pathCost.split(","); // deathSoFar, retrievedBoxes
+//
+//        int deathSoFar = Integer.parseInt(pathCost[0]);
+//        short retrievedBoxes = Short.parseShort(pathCost[1]);
+//
+//        // minimize deaths and maximize retrieved boxes
+//        //  2*deathSoFar - retrievedBoxes
+//
+//        return (2*deathSoFar) - retrievedBoxes;
+//
+//    }
 
 
 

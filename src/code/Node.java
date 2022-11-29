@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import static code.CoastGuard.visualizeState;
 
-public class Node {
+public class Node implements Comparable<Node> {
 
     /*
     state of the world: (same as initial grid)
@@ -333,6 +333,31 @@ public class Node {
             n = n.parent;
         }
         return res;
+    }
+
+    @Override
+    public int compareTo(Node n) {
+
+        // (deathSoFar, retrievedBoxes)
+
+        int deathSoFarThis = Integer.parseInt(this.pathCost.split(",")[0]);
+        int retrievedBoxesSoFarThis = Integer.parseInt(this.pathCost.split(",")[1]);
+
+        int deathSoFarN = Integer.parseInt(n.pathCost.split(",")[0]);
+        int retrievedBoxesSoFarN = Integer.parseInt(n.pathCost.split(",")[1]);
+
+        if(deathSoFarN > deathSoFarThis) //this is smaller
+            return -1;
+        if(deathSoFarN < deathSoFarThis)  // n is smaller
+            return 1;
+        if(deathSoFarN == deathSoFarThis)
+        {
+            if(retrievedBoxesSoFarN > retrievedBoxesSoFarThis)
+                return 1;
+            if(retrievedBoxesSoFarN < retrievedBoxesSoFarThis)
+                return -1;
+        }
+        return 0;
     }
 
 
