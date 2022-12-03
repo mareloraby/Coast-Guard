@@ -143,7 +143,7 @@ public class CoastGuard extends SearchProblem{
 
         // create initialState and root node from input grid
         String initialState = createInitialState(grid);
-        Node rootNode = new Node(initialState,null,"0,0",null,0);
+        Node rootNode = new Node(initialState,null,"0,0",null,0, "0,0");
 
         // counter for expanded nodes
         numExpandedNodes = 0;
@@ -324,8 +324,9 @@ public class CoastGuard extends SearchProblem{
         //    * Remaining Boxes Counter  index 9
         //    * Dead passengers  index 10
         //    * Retrieved boxes  index 11
+        //    * Lost boxes  index 12
 
-        String initialState = grid+"$;"+parsedGrid[1]+";"+totalPassengers+";"+totalShips+";"+0+";"+0+";"+0;
+        String initialState = grid+"$;"+parsedGrid[1]+";"+totalPassengers+";"+totalShips+";"+0+";"+0+";"+0 +";"+0;
 
         System.out.println("Initial State: " + initialState);
         return initialState;
@@ -372,8 +373,8 @@ public class CoastGuard extends SearchProblem{
                 prevStates.add(nextState);
                 //get dead passengers and retrieved boxes to include them in the path cost
                 String [] nextStateArr = nextState.split(";");
-                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
-                Node newNode = new Node(nextState, n, pathCost, Actions.UP, n.depth+1);
+                String pathCost = nextStateArr[10] + "," + nextStateArr[12];
+                Node newNode = new Node(nextState, n, pathCost, Actions.UP, n.depth+1, pathCost);
                 expandedNodes.add(newNode);
             }
         }
@@ -385,8 +386,8 @@ public class CoastGuard extends SearchProblem{
                 prevStates.add(nextState);
                 //get dead passengers and retrieved boxes to include them in the path cost
                 String [] nextStateArr = nextState.split(";");
-                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
-                Node newNode = new Node(nextState, n, pathCost, Actions.DOWN, n.depth+1);
+                String pathCost = nextStateArr[10] + "," + nextStateArr[12];
+                Node newNode = new Node(nextState, n, pathCost, Actions.DOWN, n.depth+1, pathCost);
                 expandedNodes.add(newNode);
             }
         }
@@ -398,8 +399,8 @@ public class CoastGuard extends SearchProblem{
                 prevStates.add(nextState);
                 //get dead passengers and retrieved boxes to include them in the path cost
                 String [] nextStateArr = nextState.split(";");
-                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
-                Node newNode = new Node(nextState, n, pathCost, Actions.RIGHT, n.depth+1);
+                String pathCost = nextStateArr[10] + "," + nextStateArr[12];
+                Node newNode = new Node(nextState, n, pathCost, Actions.RIGHT, n.depth+1, pathCost);
                 expandedNodes.add(newNode);
             }
         }
@@ -411,8 +412,8 @@ public class CoastGuard extends SearchProblem{
                 prevStates.add(nextState);
                 //get dead passengers and retrieved boxes to include them in the path cost
                 String [] nextStateArr = nextState.split(";");
-                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
-                Node newNode = new Node(nextState, n, pathCost, Actions.LEFT, n.depth+1);
+                String pathCost = nextStateArr[10] + "," + nextStateArr[12];
+                Node newNode = new Node(nextState, n, pathCost, Actions.LEFT, n.depth+1, pathCost);
                 expandedNodes.add(newNode);
             }
         }
@@ -433,8 +434,8 @@ public class CoastGuard extends SearchProblem{
                 prevStates.add(nextState);
                 //get dead passengers and retrieved boxes to include them in the path cost
                 String [] nextStateArr = nextState.split(";");
-                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
-                Node newNode = new Node(nextState, n, pathCost, Actions.DROP, n.depth+1);
+                String pathCost = nextStateArr[10] + "," + nextStateArr[12];
+                Node newNode = new Node(nextState, n, pathCost, Actions.DROP, n.depth+1, pathCost);
                 expandedNodes.add(newNode);
             }
         }
@@ -458,8 +459,8 @@ public class CoastGuard extends SearchProblem{
                 prevStates.add(nextState);
                 //get dead passengers and retrieved boxes to include them in the path cost
                 String [] nextStateArr = nextState.split(";");
-                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
-                Node newNode = new Node(nextState, n, pathCost, Actions.PICKUP, n.depth+1);
+                String pathCost = nextStateArr[10] + "," + nextStateArr[12];
+                Node newNode = new Node(nextState, n, pathCost, Actions.PICKUP, n.depth+1, pathCost);
                 expandedNodes.add(newNode);
             }
         }
@@ -482,8 +483,8 @@ public class CoastGuard extends SearchProblem{
                 prevStates.add(nextState);
                 //get dead passengers and retrieved boxes to include them in the path cost
                 String [] nextStateArr = nextState.split(";");
-                String pathCost = nextStateArr[10] + "," + nextStateArr[11];
-                Node newNode = new Node(nextState, n, pathCost, Actions.RETRIEVE, n.depth+1);
+                String pathCost = nextStateArr[10] + "," + nextStateArr[12];
+                Node newNode = new Node(nextState, n, pathCost, Actions.RETRIEVE, n.depth+1, pathCost);
                 expandedNodes.add(newNode);
             }
         }
@@ -752,6 +753,7 @@ public class CoastGuard extends SearchProblem{
 
             //add all nodes to Stack
             for (Node ni : childrenOfNode){
+                ni.finalPathCost = ni.pathCost; //didn't really need to do it because it's set to path cost by default upon expanding
                 ucQueue.add(ni);
             }
 

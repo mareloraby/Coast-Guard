@@ -22,6 +22,7 @@ public class Node implements Comparable<Node> {
      * Remaining Boxes Counter  index 9
      * Dead passengers  index 10
      * Retrieved boxes  index 11
+     * Lost boxes index 12
 
      griddims;maxCapacity; location of coast guard; location of stations; location of ships;$;maxCapacity;0;0;0;0;0
      $: no wrecks
@@ -29,18 +30,23 @@ public class Node implements Comparable<Node> {
 
     String currentState;
     Node parent;
-    String pathCost;    // cost -> (deathSoFar, retrievedBoxes)
+    String pathCost;    // actual cost -> (deathSoFar, lostBoxes)
     Actions actionTaken; //action to get to this node
     int depth;
+    String finalPathCost; // path cost to be used to enqueue nodes
+                          //UC: "actual deathSoFar,actual lostBoxes"
+                          //Greedy: H1-> "estimated deathSoFar,0" & H2-> "0,estimated lostBoxes"
+                          //A*: H1-> "estimated deathSoFar+ actual deathSoFar,actual lostBoxes" & H2-> "actual deathSoFar,estimated lostBoxes + actual lostBoxes"
 
 
-    public Node(String currentState, Node parent, String pathCost, Actions actionTaken, int depth) {
+    public Node(String currentState, Node parent, String pathCost, Actions actionTaken, int depth, String finalPathCost) {
 
         this.currentState = currentState;
         this.parent = parent;
         this.pathCost = pathCost;
         this.actionTaken = actionTaken;
         this.depth = depth;
+        this.finalPathCost = finalPathCost;
     }
 
     // generate next state
@@ -68,6 +74,9 @@ public class Node implements Comparable<Node> {
 
         //get number of retrieved boxes
         short retrievedBoxes = Short.parseShort(parsedState[11]);
+
+        //get number of lost boxes
+        short lostBoxes = Short.parseShort(parsedState[12]);
 
         //get number of remaining boxes
         short remainingBoxes = Short.parseShort(parsedState[9]);
@@ -130,7 +139,7 @@ public class Node implements Comparable<Node> {
                 wreckArray[j] = (Byte.parseByte(wreckArray[j])+1) + "";
                 if(Byte.parseByte(wreckArray[j])==20){ //expired box
                     remainingBoxes--;
-                    //ask rowan here
+                    lostBoxes++;
                 }
                 else{ // non expired box
                     if(updatedWrecks.equals("")){ //first wreck
@@ -307,7 +316,7 @@ public class Node implements Comparable<Node> {
 
         String nextState = parsedState[0] + ";" + parsedState[1] + ";" + coastGuardLocation + ";" + parsedState[3] + ";" + updatedShips + ";"
                 + updatedWrecks + ";" + remainingCapacity + ";" + remainingPassengers + ";" + remainingShips + ";" + remainingBoxes + ";"
-                + deadPassengers + ";" + retrievedBoxes;
+                + deadPassengers + ";" + retrievedBoxes + ";" + lostBoxes;
 
         return nextState;
     }
@@ -340,11 +349,11 @@ public class Node implements Comparable<Node> {
 
         // (deathSoFar, retrievedBoxes)
 
-        int deathSoFarThis = Integer.parseInt(this.pathCost.split(",")[0]);
-        int retrievedBoxesSoFarThis = Integer.parseInt(this.pathCost.split(",")[1]);
+        int deathSoFarThis = Integer.parseInt(this.finalPathCost.split(",")[0]);
+        int lostBoxesSoFarThis = Integer.parseInt(this.finalPathCost.split(",")[1]);
 
-        int deathSoFarN = Integer.parseInt(n.pathCost.split(",")[0]);
-        int retrievedBoxesSoFarN = Integer.parseInt(n.pathCost.split(",")[1]);
+        int deathSoFarN = Integer.parseInt(n.finalPathCost.split(",")[0]);
+        int lostBoxesSoFarN = Integer.parseInt(n.finalPathCost.split(",")[1]);
 
         if(deathSoFarN > deathSoFarThis) //this is smaller
             return -1;
@@ -352,9 +361,9 @@ public class Node implements Comparable<Node> {
             return 1;
         if(deathSoFarN == deathSoFarThis)
         {
-            if(retrievedBoxesSoFarN > retrievedBoxesSoFarThis)
+            if(lostBoxesSoFarN < lostBoxesSoFarThis)
                 return 1;
-            if(retrievedBoxesSoFarN < retrievedBoxesSoFarThis)
+            if(lostBoxesSoFarN > lostBoxesSoFarThis)
                 return -1;
         }
         return 0;
