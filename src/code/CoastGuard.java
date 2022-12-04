@@ -713,6 +713,72 @@ public class CoastGuard extends SearchProblem{
 
     }
 
+    public int heuristic1(String currState){
+        int estimatedLostPeople = 0;
+        String [] parsedState = currState.split(";");
+
+        //get coast guard location
+        String coastGuardLocation = parsedState[2];
+        String [] guardCoordinates = coastGuardLocation.split(",");
+        int guardX = Integer.parseInt(guardCoordinates[0]);
+        int guardY = Integer.parseInt(guardCoordinates[1]);
+
+        int minDistance = Integer.MAX_VALUE;
+
+        String [] shipsLocations = parsedState[4].split(",");
+
+        if(shipsLocations.length>1)  // if there's a ship
+        {
+            for (int i = 0; i < shipsLocations.length - 2; i++) {
+                byte shX = Byte.parseByte(shipsLocations[i]);
+                byte shY = Byte.parseByte(shipsLocations[i + 1]);
+
+                int distanceFromGuard = Math.abs(guardX-shX) + Math.abs(guardY-shY);
+                if(distanceFromGuard<minDistance && distanceFromGuard!=0){
+                    minDistance = distanceFromGuard;
+                }
+                i += 2;
+            }
+        }
+
+//        String shipsString = parsedState[4];
+//        int j = 0;
+//        while(j<minDistance && shipsString.length()>0){
+//            String [] parsedShips = shipsString.split(",");
+//            String updatedShips = "";
+//            int k = 2 ;
+//            while (k<parsedShips.length){
+//                int shipPass = Integer.parseInt(parsedShips[k]);
+//                estimatedLostPeople++;
+//                shipPass--;
+//                if(shipPass>0){
+//                    if(updatedShips.equals("")){
+//                        updatedShips = parsedShips[k-2] + "," + parsedShips[k-1] + "," + shipPass;
+//                    }
+//                    else{
+//                        updatedShips += "," + parsedShips[k-2] + "," + parsedShips[k-1] + "," + shipPass;
+//                    }
+//                }
+//                k+=3;
+//            }
+//            shipsString = updatedShips;
+//            j++;
+//        }
+
+        int j = 2;
+        while (j<shipsLocations.length){
+            int shipPass = Integer.parseInt(shipsLocations[j]);
+            if(shipPass<minDistance){
+                estimatedLostPeople+=shipPass;
+            }
+            else{
+                estimatedLostPeople+=minDistance;
+            }
+            j+=3;
+        }
+        return estimatedLostPeople;
+    }
+
     public String GR1(){
         return "";
     }
