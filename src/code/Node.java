@@ -1,8 +1,13 @@
 package code;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
-import static code.CoastGuard.visualizeState;
+import static code.CoastGuard.isViz;
+import static code.CoastGuard.stateStrings;
+
+
+
 
 public class Node implements Comparable<Node> {
 
@@ -27,6 +32,7 @@ public class Node implements Comparable<Node> {
      griddims;maxCapacity; location of coast guard; location of stations; location of ships;$;maxCapacity;0;0;0;0;0
      $: no wrecks
      */
+
 
     String currentState;
     Node parent;
@@ -322,16 +328,16 @@ public class Node implements Comparable<Node> {
     }
 
     // get path that lead to current node
+
+
     public String getAncestors(){
         String res = "";
         Node n = this;
         while(n.parent!=null){
 
-            System.out.println();
-            System.out.println("currState: " + n.currentState);
-            System.out.println("Action Taken: "+ n.actionTaken);
-
-            //visualizeState(n.currentState);
+            if(isViz){
+                stateStrings.push(n);
+            }
 
             if(res.equals("")){
                 res = n.actionTaken + "";

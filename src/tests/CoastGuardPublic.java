@@ -616,9 +616,6 @@ static class Checker{
 
 		public boolean cool() {
 
-			System.out.println("ss.keyset(): " + ss.keySet().toString());
-			System.out.println("cp(should be = 0): " + cp);
-
 			return ss.size()== 0 && cp == 0 ;
 		}
 		
