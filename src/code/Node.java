@@ -6,9 +6,6 @@ import java.util.Stack;
 import static code.CoastGuard.isViz;
 import static code.CoastGuard.stateStrings;
 
-
-
-
 public class Node implements Comparable<Node> {
 
     /*
@@ -35,7 +32,7 @@ public class Node implements Comparable<Node> {
 
 
     String currentState;
-    Node parent;
+    Node parent; //parent Node of current Node
     String pathCost;    // actual cost -> (deathSoFar, lostBoxes)
     Actions actionTaken; //action to get to this node
     int depth;
@@ -328,8 +325,6 @@ public class Node implements Comparable<Node> {
     }
 
     // get path that lead to current node
-
-
     public String getAncestors(){
         String res = "";
         Node n = this;

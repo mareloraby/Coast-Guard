@@ -16,14 +16,12 @@ public class CoastGuard extends SearchProblem{
     public static Deque<Node> BFQueue; //queue
     public static Stack<Node> DFQueue; //stack
     public static Deque<Node> IDQueue; //stack
+
     public static PriorityQueue<Node> ucQueue ;
-
     public static PriorityQueue<Node> GRQueue;
-
     public static PriorityQueue<Node> ASQueue;
 
-    public static Stack<Node> IDQueue2;
-
+    // -------------------------------------------------------- GenGrid:  --------------------------------------------------------
 
     public static String genGrid(){
         /*
@@ -115,9 +113,11 @@ public class CoastGuard extends SearchProblem{
         gridString.append(";");
 
 
-        return gridString.toString();
+        return switchInputXY(gridString.toString());
 
     }
+
+    // --------------------------------------------------------- Solve:  ---------------------------------------------------------
 
     public static String solve( String grid, String strategy,  boolean visualize ){
 
@@ -200,6 +200,42 @@ public class CoastGuard extends SearchProblem{
         return "fail";
     }
 
+    // Checks whether current node is the goal node
+    public static boolean isGoal(Node n){
+
+         /*
+             You reach your goal when there are no living passengers who are not rescued,
+           there are no undamaged boxes which have not been retrieved, and the rescue boat is not
+           carrying any passengers.
+
+             * Remaining Coast Guard Capacity  index 6 (*)
+             * Remaining Passengers Counter  index 7 (*)
+             * Remaining Ships Counter  index 8
+             * Remaining Boxes Counter  index 9 (*)
+             * Dead passengers  index 10
+             * Retrieved boxes  index 11
+         */
+
+        String currState = n.currentState;
+        String [] currStateArr = currState.split(";");
+
+        byte maxCapacity = Byte.parseByte(currStateArr[1]);
+        byte remainingCapacity = Byte.parseByte(currStateArr[6]);
+        int remainingPassengersOnGrid = Integer.parseInt(currStateArr[7]);
+        byte remainingBoxesNotRetrieved = Byte.parseByte(currStateArr[9]);
+
+        if((remainingCapacity == maxCapacity ) &&
+                (remainingPassengersOnGrid == 0) &&
+                (remainingBoxesNotRetrieved == 0) ){
+
+            return true;
+        }
+
+        // not goal
+        return false;
+    }
+
+    // Visualizes states and grids
     public static void visualizeState(String currState){
 
         /*
@@ -525,42 +561,6 @@ public class CoastGuard extends SearchProblem{
         return expandedNodes;
     }
 
-    // Checks whether current node is the goal node
-    public static boolean isGoal(Node n){
-
-         /*
-             You reach your goal when there are no living passengers who are not rescued,
-           there are no undamaged boxes which have not been retrieved, and the rescue boat is not
-           carrying any passengers.
-
-             * Remaining Coast Guard Capacity  index 6 (*)
-             * Remaining Passengers Counter  index 7 (*)
-             * Remaining Ships Counter  index 8
-             * Remaining Boxes Counter  index 9 (*)
-             * Dead passengers  index 10
-             * Retrieved boxes  index 11
-         */
-
-        String currState = n.currentState;
-        String [] currStateArr = currState.split(";");
-
-        byte maxCapacity = Byte.parseByte(currStateArr[1]);
-        byte remainingCapacity = Byte.parseByte(currStateArr[6]);
-        int remainingPassengersOnGrid = Integer.parseInt(currStateArr[7]);
-        byte remainingBoxesNotRetrieved = Byte.parseByte(currStateArr[9]);
-
-        if((remainingCapacity == maxCapacity ) &&
-                (remainingPassengersOnGrid == 0) &&
-                (remainingBoxesNotRetrieved == 0) ){
-
-            return true;
-        }
-
-        // not goal
-        return false;
-    }
-
-
     // ---------------------------------------------------   Search algorithms:  ---------------------------------------------------
 
     public static String BF(){
@@ -732,107 +732,41 @@ public class CoastGuard extends SearchProblem{
 
     }
 
-    public static int heuristic1(String currState){
-        int estimatedLostPeople = 0;
-        String [] parsedState = currState.split(";");
+    public static String UC(){
 
-        //get coast guard location
-        String coastGuardLocation = parsedState[2];
-        String [] guardCoordinates = coastGuardLocation.split(",");
-        int guardX = Integer.parseInt(guardCoordinates[0]);
-        int guardY = Integer.parseInt(guardCoordinates[1]);
-
-        int minDistance = Integer.MAX_VALUE;
-
-        String [] shipsLocations = parsedState[4].split(",");
-
-        if(shipsLocations.length>1)  // if there's a ship
+        while(!ucQueue.isEmpty())
         {
-            for (int i = 0; i < shipsLocations.length - 2; i++) {
-                byte shX = Byte.parseByte(shipsLocations[i]);
-                byte shY = Byte.parseByte(shipsLocations[i + 1]);
+            Node currNode = (Node) ucQueue.poll();
+//            System.out.println("curr path cost " + currNode.pathCost);
+            numExpandedNodes++;
 
-                int distanceFromGuard = Math.abs(guardX-shX) + Math.abs(guardY-shY);
-                if(distanceFromGuard<minDistance && distanceFromGuard!=0){
-                    minDistance = distanceFromGuard;
-                }
-                i += 2;
-            }
-        }
+            if(isGoal(currNode)){
 
-        int j = 2;
-        while (j<shipsLocations.length){
-            int shipPass = Integer.parseInt(shipsLocations[j]);
-            if(shipPass<minDistance){
-                estimatedLostPeople+=shipPass;
+                String [] currNodeStateArray = currNode.currentState.split(";");
+                String plan = currNode.getAncestors();
+                String deaths = currNodeStateArray[10];
+                String retrieved = currNodeStateArray[11];
+
+                return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
+
             }
-            else{
-                estimatedLostPeople+=minDistance;
+
+
+            // get all child nodes of the current node
+            ArrayList<Node> childrenOfNode = expandNode(currNode);
+
+//            if(childrenOfNode.size()>0) numExpandedNodes++;
+
+            //add all nodes to Queue
+            for (Node ni : childrenOfNode){
+                ni.finalPathCost = ni.pathCost; //didn't really need to do it because it's set to path cost by default upon expanding
+                ucQueue.add(ni);
             }
-            j+=3;
+
+
         }
-        return estimatedLostPeople;
+        return "fail";
     }
-
-    public static int heuristic2(String currState){
-
-        int estimatedLostBoxes = 0;
-
-        String [] parsedState = currState.split(";");
-
-        //get coast guard location
-        String coastGuardLocation = parsedState[2];
-        String [] guardCoordinates = coastGuardLocation.split(",");
-        int guardX = Integer.parseInt(guardCoordinates[0]);
-        int guardY = Integer.parseInt(guardCoordinates[1]);
-
-        // timesteps > 19 - counter
-
-
-        // wrecks
-        //    * Location of all wrecks and each box's current damage: wrX1, wrY1, wrD1  index 5
-        String[] wrecksLocations = parsedState[5].split(",");
-        if (wrecksLocations.length > 1) {
-            for (int i = 0; i < wrecksLocations.length - 2; i++) {
-                byte wrX = Byte.parseByte(wrecksLocations[i]);
-                byte wrY = Byte.parseByte(wrecksLocations[i + 1]);
-                int wrDamage = Integer.parseInt(wrecksLocations[i + 2]);
-
-                int distanceFromGuard = Math.abs(guardX-wrX) + Math.abs(guardY-wrY);
-
-                if(distanceFromGuard > (19 - wrDamage))
-                    estimatedLostBoxes++;
-
-
-                i += 2;
-            }
-
-        }
-
-        //Ships
-        //    * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
-        String [] shipsLocations = parsedState[4].split(",");
-
-        if(shipsLocations.length>1)  // if there's a ship
-        {
-            for (int i = 0; i < shipsLocations.length - 2; i++) {
-                byte shX = Byte.parseByte(shipsLocations[i]);
-                byte shY = Byte.parseByte(shipsLocations[i + 1]);
-                int numPass = Integer.parseInt(shipsLocations[i + 2]);
-
-                int distanceFromGuard = Math.abs(guardX-shX) + Math.abs(guardY-shY);
-                if((numPass + 19) < distanceFromGuard )
-                    estimatedLostBoxes++;
-
-                i += 2;
-            }
-        }
-
-        return estimatedLostBoxes;
-
-
-    }
-
 
     public static String GR1(){
 
@@ -989,40 +923,107 @@ public class CoastGuard extends SearchProblem{
 
     }
 
-    public static String UC(){
+    // -------------------------------------------------------   Heuristics:  -------------------------------------------------------
 
-        while(!ucQueue.isEmpty())
+    public static int heuristic1(String currState){
+        int estimatedLostPeople = 0;
+        String [] parsedState = currState.split(";");
+
+        //get coast guard location
+        String coastGuardLocation = parsedState[2];
+        String [] guardCoordinates = coastGuardLocation.split(",");
+        int guardX = Integer.parseInt(guardCoordinates[0]);
+        int guardY = Integer.parseInt(guardCoordinates[1]);
+
+        int minDistance = Integer.MAX_VALUE;
+
+        String [] shipsLocations = parsedState[4].split(",");
+
+        if(shipsLocations.length>1)  // if there's a ship
         {
-            Node currNode = (Node) ucQueue.poll();
-//            System.out.println("curr path cost " + currNode.pathCost);
-            numExpandedNodes++;
+            for (int i = 0; i < shipsLocations.length - 2; i++) {
+                byte shX = Byte.parseByte(shipsLocations[i]);
+                byte shY = Byte.parseByte(shipsLocations[i + 1]);
 
-            if(isGoal(currNode)){
-
-                String [] currNodeStateArray = currNode.currentState.split(";");
-                String plan = currNode.getAncestors();
-                String deaths = currNodeStateArray[10];
-                String retrieved = currNodeStateArray[11];
-
-                return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
-
+                int distanceFromGuard = Math.abs(guardX-shX) + Math.abs(guardY-shY);
+                if(distanceFromGuard<minDistance && distanceFromGuard!=0){
+                    minDistance = distanceFromGuard;
+                }
+                i += 2;
             }
+        }
 
-
-            // get all child nodes of the current node
-            ArrayList<Node> childrenOfNode = expandNode(currNode);
-
-//            if(childrenOfNode.size()>0) numExpandedNodes++;
-
-            //add all nodes to Queue
-            for (Node ni : childrenOfNode){
-                ni.finalPathCost = ni.pathCost; //didn't really need to do it because it's set to path cost by default upon expanding
-                ucQueue.add(ni);
+        int j = 2;
+        while (j<shipsLocations.length){
+            int shipPass = Integer.parseInt(shipsLocations[j]);
+            if(shipPass<minDistance){
+                estimatedLostPeople+=shipPass;
             }
+            else{
+                estimatedLostPeople+=minDistance;
+            }
+            j+=3;
+        }
+        return estimatedLostPeople;
+    }
 
+    public static int heuristic2(String currState){
+
+        int estimatedLostBoxes = 0;
+
+        String [] parsedState = currState.split(";");
+
+        //get coast guard location
+        String coastGuardLocation = parsedState[2];
+        String [] guardCoordinates = coastGuardLocation.split(",");
+        int guardX = Integer.parseInt(guardCoordinates[0]);
+        int guardY = Integer.parseInt(guardCoordinates[1]);
+
+        // timesteps > 19 - counter
+
+
+        // wrecks
+        //    * Location of all wrecks and each box's current damage: wrX1, wrY1, wrD1  index 5
+        String[] wrecksLocations = parsedState[5].split(",");
+        if (wrecksLocations.length > 1) {
+            for (int i = 0; i < wrecksLocations.length - 2; i++) {
+                byte wrX = Byte.parseByte(wrecksLocations[i]);
+                byte wrY = Byte.parseByte(wrecksLocations[i + 1]);
+                int wrDamage = Integer.parseInt(wrecksLocations[i + 2]);
+
+                int distanceFromGuard = Math.abs(guardX-wrX) + Math.abs(guardY-wrY);
+
+                if(distanceFromGuard > (19 - wrDamage))
+                    estimatedLostBoxes++;
+
+
+                i += 2;
+            }
 
         }
-        return "fail";
+
+        //Ships
+        //    * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
+        String [] shipsLocations = parsedState[4].split(",");
+
+        if(shipsLocations.length>1)  // if there's a ship
+        {
+            for (int i = 0; i < shipsLocations.length - 2; i++) {
+                byte shX = Byte.parseByte(shipsLocations[i]);
+                byte shY = Byte.parseByte(shipsLocations[i + 1]);
+                int numPass = Integer.parseInt(shipsLocations[i + 2]);
+
+                int distanceFromGuard = Math.abs(guardX-shX) + Math.abs(guardY-shY);
+                if((numPass + 19) < distanceFromGuard )
+                    estimatedLostBoxes++;
+
+                i += 2;
+            }
+        }
+
+        return estimatedLostBoxes;
+
+
     }
 
     // ---------------------------------------------------    Helper Methods:    ---------------------------------------------------
@@ -1033,6 +1034,7 @@ public class CoastGuard extends SearchProblem{
         return start   +  (int)( Math.random() * (end-start+1) );
     }
 
+    // Helper method to solve and genGrid()
     private static String switchInputXY(String grid){
 
         String [] parsedGrid =  grid.split(";");
@@ -1089,7 +1091,6 @@ public class CoastGuard extends SearchProblem{
 
     }
 
-
     // Helper method to genGrid()
     private static int randomCell() {
         int cellIndex = random(0,emptyCells.size()-1);
@@ -1140,6 +1141,8 @@ public class CoastGuard extends SearchProblem{
         }
         System.out.println();
     }
+
+
 
 
 }
