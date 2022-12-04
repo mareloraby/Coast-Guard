@@ -15,6 +15,10 @@ public class CoastGuard extends SearchProblem{
     public static Deque<Node> IDQueue; //stack
     public static PriorityQueue<Node> ucQueue ;
 
+    public static PriorityQueue<Node> GRQueue;
+
+    public static PriorityQueue<Node> ASQueue;
+
     public static Stack<Node> IDQueue2;
 
 
@@ -117,6 +121,7 @@ public class CoastGuard extends SearchProblem{
 //        System.out.println(switchInputXY(grid));
         prevStates = new HashSet<String>();
         String searchResult = solveSearchProblem(switchInputXY(grid),strategy);
+        System.out.println("RETURNED" + searchResult);
 
         if(visualize){
 
@@ -166,13 +171,26 @@ public class CoastGuard extends SearchProblem{
                 ucQueue = new PriorityQueue<Node>();
                 ucQueue.add(rootNode);
                 return UC();
-            case "GR1":;
-            case "GR2":;
-            case "AS1":;
-            case "AS2":;
+            case "GR1":
+                GRQueue = new PriorityQueue<Node>();
+                GRQueue.add(rootNode);
+                return GR1();
+            case "GR2":
+                GRQueue = new PriorityQueue<Node>();
+                GRQueue.add(rootNode);
+                return GR2();
+            case "AS1":
+                ASQueue = new PriorityQueue<Node>();
+                ASQueue.add(rootNode);
+                return AS1();
+            case "AS2":
+                ASQueue = new PriorityQueue<Node>();
+                ASQueue.add(rootNode);
+                return AS2();
+
         }
 
-        return "";
+        return "fail";
     }
 
     public static void visualizeState(String currState){
@@ -713,7 +731,7 @@ public class CoastGuard extends SearchProblem{
 
     }
 
-    public int heuristic1(String currState){
+    public static int heuristic1(String currState){
         int estimatedLostPeople = 0;
         String [] parsedState = currState.split(";");
 
@@ -779,20 +797,218 @@ public class CoastGuard extends SearchProblem{
         return estimatedLostPeople;
     }
 
-    public String GR1(){
-        return "";
+    public static int heuristic2(String currState){
+
+        int estimatedLostBoxes = 0;
+
+        String [] parsedState = currState.split(";");
+
+        //get coast guard location
+        String coastGuardLocation = parsedState[2];
+        String [] guardCoordinates = coastGuardLocation.split(",");
+        int guardX = Integer.parseInt(guardCoordinates[0]);
+        int guardY = Integer.parseInt(guardCoordinates[1]);
+
+        // timesteps > 19 - counter
+
+
+        // wrecks
+        //    * Location of all wrecks and each box's current damage: wrX1, wrY1, wrD1  index 5
+        String[] wrecksLocations = parsedState[5].split(",");
+        if (wrecksLocations.length > 1) {
+            for (int i = 0; i < wrecksLocations.length - 2; i++) {
+                byte wrX = Byte.parseByte(wrecksLocations[i]);
+                byte wrY = Byte.parseByte(wrecksLocations[i + 1]);
+                int wrDamage = Integer.parseInt(wrecksLocations[i + 2]);
+
+                int distanceFromGuard = Math.abs(guardX-wrX) + Math.abs(guardY-wrY);
+
+                if(distanceFromGuard > (19 - wrDamage))
+                    estimatedLostBoxes++;
+
+
+                i += 2;
+            }
+
+        }
+
+        //    * Location of all ships and the number of remaining passengers on each: shipX1, shipY1, shipRP1  index 4
+        String [] shipsLocations = parsedState[4].split(",");
+
+        if(shipsLocations.length>1)  // if there's a ship
+        {
+            for (int i = 0; i < shipsLocations.length - 2; i++) {
+                byte shX = Byte.parseByte(shipsLocations[i]);
+                byte shY = Byte.parseByte(shipsLocations[i + 1]);
+                int numPass = Integer.parseInt(shipsLocations[i + 2]);
+
+                int distanceFromGuard = Math.abs(guardX-shX) + Math.abs(guardY-shY);
+                if((numPass + 19) < distanceFromGuard )
+                    estimatedLostBoxes++;
+
+                i += 2;
+            }
+        }
+
+        return estimatedLostBoxes;
+
+
     }
 
-    public String GR2(){
-        return "";
+
+    public static String GR1(){
+
+        while(!GRQueue.isEmpty()){
+
+
+            Node currNode = (Node) GRQueue.poll();
+            numExpandedNodes++;
+
+            //check if it's the goal node
+            if(isGoal(currNode)){
+
+                String [] currNodeStateArray = currNode.currentState.split(";");
+                String plan = currNode.getAncestors();
+                String deaths = currNodeStateArray[10];
+                String retrieved = currNodeStateArray[11];
+
+                return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
+
+            }
+
+            // get all child nodes of the current node
+            ArrayList<Node> childrenOfNode = expandNode(currNode);
+
+            //add all nodes to Queue
+            for (Node ni : childrenOfNode){
+                // estimatedLostPeople is the finalPathCost
+                String estimateH1 = "" + heuristic1(ni.currentState) +",0";
+                ni.finalPathCost = estimateH1;
+                GRQueue.add(ni);
+            }
+
+        }
+
+        return "fail";
     }
 
-    public String AS1(){
-        return "";
+    public static String GR2(){
+
+        while(!GRQueue.isEmpty()){
+
+
+            Node currNode = (Node) GRQueue.poll();
+            numExpandedNodes++;
+
+            //check if it's the goal node
+            if(isGoal(currNode)){
+
+                String [] currNodeStateArray = currNode.currentState.split(";");
+                String plan = currNode.getAncestors();
+                String deaths = currNodeStateArray[10];
+                String retrieved = currNodeStateArray[11];
+
+                return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
+
+            }
+
+            // get all child nodes of the current node
+            ArrayList<Node> childrenOfNode = expandNode(currNode);
+
+            //add all nodes to Queue
+            for (Node ni : childrenOfNode){
+                // estimatedLostPeople is the finalPathCost
+                String estimateH2 = "0," + heuristic2(ni.currentState) ;
+                ni.finalPathCost = estimateH2;
+                GRQueue.add(ni);
+            }
+
+        }
+
+        return "fail";
+
     }
 
-    public String AS2(){
-        return "";
+    public static String AS1(){
+
+
+        while(!ASQueue.isEmpty()){
+
+
+            Node currNode = (Node) ASQueue.poll();
+            numExpandedNodes++;
+
+            //check if it's the goal node
+            if(isGoal(currNode)){
+
+                String [] currNodeStateArray = currNode.currentState.split(";");
+                String plan = currNode.getAncestors();
+                String deaths = currNodeStateArray[10];
+                String retrieved = currNodeStateArray[11];
+
+                return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
+
+            }
+
+            // get all child nodes of the current node
+            ArrayList<Node> childrenOfNode = expandNode(currNode);
+
+            //add all nodes to Queue
+            for (Node ni : childrenOfNode){
+                // estimatedLostPeople + pathCost is the finalPathCost
+
+                String [] pathCost = ni.pathCost.split(",");
+                int deathCost = Integer.parseInt(pathCost[0]) + heuristic1(ni.currentState) ;
+                String estimateH1 = "" + deathCost +"," + pathCost[1];
+                ni.finalPathCost = estimateH1;
+                ASQueue.add(ni);
+            }
+
+        }
+
+        return "fail";
+    }
+
+    public static String AS2(){
+
+
+        while(!ASQueue.isEmpty()){
+
+
+            Node currNode = (Node) ASQueue.poll();
+            numExpandedNodes++;
+
+            //check if it's the goal node
+            if(isGoal(currNode)){
+
+                String [] currNodeStateArray = currNode.currentState.split(";");
+                String plan = currNode.getAncestors();
+                String deaths = currNodeStateArray[10];
+                String retrieved = currNodeStateArray[11];
+
+                return plan + ";" + deaths + ";" + retrieved + ";" + numExpandedNodes;
+
+            }
+
+            // get all child nodes of the current node
+            ArrayList<Node> childrenOfNode = expandNode(currNode);
+
+            //add all nodes to Queue
+            for (Node ni : childrenOfNode){
+                // estimatedLostPeople + pathCost is the finalPathCost
+
+                String [] pathCost = ni.pathCost.split(",");
+                int boxesCost = Integer.parseInt(pathCost[1]) + heuristic2(ni.currentState) ;
+                String estimateH2 = pathCost[0] + "," + boxesCost;
+                ni.finalPathCost = estimateH2;
+                ASQueue.add(ni);
+            }
+
+        }
+
+        return "fail";
+
+
     }
 
     public static String UC(){
@@ -820,7 +1036,7 @@ public class CoastGuard extends SearchProblem{
 
 //            if(childrenOfNode.size()>0) numExpandedNodes++;
 
-            //add all nodes to Stack
+            //add all nodes to Queue
             for (Node ni : childrenOfNode){
                 ni.finalPathCost = ni.pathCost; //didn't really need to do it because it's set to path cost by default upon expanding
                 ucQueue.add(ni);
