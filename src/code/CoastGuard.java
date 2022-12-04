@@ -285,7 +285,10 @@ public class CoastGuard extends SearchProblem{
             //    * Retrieved boxes  index 11
             short retrievedBoxes = Short.parseShort(currStateArray[11]);
 
-            System.out.println("Dead so far: " + deadSoFar + "  Retrieved boxes so far: " + retrievedBoxes);
+            //    * Retrieved boxes  index 12
+            short lostBoxes = Short.parseShort(currStateArray[12]);
+
+            System.out.println("Dead so far: " + deadSoFar + "  Retrieved boxes so far: " + retrievedBoxes + " Lost boxes so far: " + lostBoxes);
         }
 
         printStringGrid(gameBoard);
