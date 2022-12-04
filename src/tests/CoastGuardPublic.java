@@ -31,7 +31,7 @@ public class CoastGuardPublic {
 
 	@Test(timeout = 10000)
 	public void testa0() throws Exception {
-		String solution = CoastGuard.solve(grid0, "BF", false);
+		String solution = CoastGuard.solve(grid0, "BF", true);
 		solution = solution.replace(" ", "");
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
@@ -373,7 +373,12 @@ public class CoastGuardPublic {
 		String solution = CoastGuard.solve(grid8, "GR2", false);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid8, solution));
 	}
-	
+
+	@Test(timeout = 10000)
+	public void testf9() throws Exception {
+		String solution = CoastGuard.solve(grid9, "GR2", false);
+		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid9, solution));
+	}
 	
 	@Test(timeout = 10000)
 	public void testg0() throws Exception {
@@ -610,9 +615,6 @@ static class Checker{
 		}
 
 		public boolean cool() {
-
-			System.out.println("ss.keyset(): " + ss.keySet().toString());
-			System.out.println("cp(should be = 0): " + cp);
 
 			return ss.size()== 0 && cp == 0 ;
 		}
