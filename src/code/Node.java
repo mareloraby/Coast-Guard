@@ -320,7 +320,6 @@ public class Node implements Comparable<Node> {
         String nextState = parsedState[0] + ";" + parsedState[1] + ";" + coastGuardLocation + ";" + parsedState[3] + ";" + updatedShips + ";"
                 + updatedWrecks + ";" + remainingCapacity + ";" + remainingPassengers + ";" + remainingShips + ";" + remainingBoxes + ";"
                 + deadPassengers + ";" + retrievedBoxes + ";" + lostBoxes;
-
         return nextState;
     }
 

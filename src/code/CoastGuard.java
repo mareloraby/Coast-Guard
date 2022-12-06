@@ -129,9 +129,7 @@ public class CoastGuard extends SearchProblem{
 
 
         if(visualize){
-
             visualizeState(switchInputXY(grid));
-
             while(!stateStrings.isEmpty()){
                 Node nState = stateStrings.pop();
                 System.out.println("currState: " + nState.currentState);
@@ -946,7 +944,7 @@ public class CoastGuard extends SearchProblem{
                 byte shY = Byte.parseByte(shipsLocations[i + 1]);
 
                 int distanceFromGuard = Math.abs(guardX-shX) + Math.abs(guardY-shY);
-                if(distanceFromGuard<minDistance && distanceFromGuard!=0){
+                if(distanceFromGuard<minDistance){
                     minDistance = distanceFromGuard;
                 }
                 i += 2;
