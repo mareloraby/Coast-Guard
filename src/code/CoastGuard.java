@@ -124,12 +124,12 @@ public class CoastGuard extends SearchProblem{
         if(visualize) stateStrings = new Stack<>();
         isViz = visualize;
 
+
         prevStates = new HashSet<String>();
         String searchResult = solveSearchProblem(switchInputXY(grid),strategy);
 
 
         if(visualize){
-            visualizeState(switchInputXY(grid));
             while(!stateStrings.isEmpty()){
                 Node nState = stateStrings.pop();
                 System.out.println("currState: " + nState.currentState);
@@ -391,6 +391,8 @@ public class CoastGuard extends SearchProblem{
         String initialState = grid+"$;"+parsedGrid[1]+";"+totalPassengers+";"+totalShips+";"+0+";"+0+";"+0 +";"+0;
 
         System.out.println("Initial State: " + initialState);
+        if(isViz) visualizeState(grid);
+
         return initialState;
     }
 
