@@ -592,7 +592,7 @@ Result: DOWN,DOWN,DOWN,LEFT,LEFT,PICKUP,UP,UP,RIGHT,DROP,DOWN,LEFT,LEFT,LEFT,PIC
 
 <hr>
 
-# Project 2  
+## Project 2  
 In [Project 2](/SuccessorState) we implemented a simplified logic-based
 version of the Coast Guard agent using prolog. This agent reasons using the situation calculus.
 
