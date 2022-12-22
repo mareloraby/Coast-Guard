@@ -13,7 +13,8 @@
 
 A coast guard is in charge of a rescue boat that goes into the sea to rescue other sinking ships. When rescuing a ship, they need to rescue any living people on it and to retrieve its black box after there are no more passengers thereon to rescue. If a ship sinks completely, it becomes a wreck and they still have to retrieve the black box before it is damaged. Each ship loses one passenger every time step. Additionally, each black box incurs an additional damage point every time
 step once the ship becomes a wreck. One time step is counted every time an action is performed. Goal is reached when there are no living passengers who are not rescued, there are no undamaged boxes which have not been retrieved, and the rescue boat is not carrying any passengers. They would also like to rescue as many people as possible and retrieve as many black boxes as possible.
-This could be defined as a search problem as follows:
+
+**This could be defined as a search problem, where a search agent uses different search strategies to save as much passengers as possible, and retrieve as much black boxes as possible. The search problem is defined as follows:**
 
 - Operators:  Up, Down, Left, Right, Pick-up, Drop, Retrieve
 
@@ -623,7 +624,7 @@ version of the Coast Guard agent using prolog. This agent reasons using the situ
 
 - The agent’s capacity can be either 1 or 2.
 
-- The grid size is 3 X 3 or 4 X 4.
+- The grid size is 3x3 or 4x4.
 
 ### Example run:
 
@@ -642,3 +643,6 @@ version of the Coast Guard agent using prolog. This agent reasons using the situ
     </details>
 
 
+# Developers:
+- Rowan Amgad
+- Maryam ElOraby
