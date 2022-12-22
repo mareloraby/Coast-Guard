@@ -27,7 +27,7 @@ It is represented in our implementation as follows: griddims; maxCapacity; locat
 > - Greedy with two different heuristics.
 > - A* with two different heuristics.
  
-A detailed description of our implementation, and the input and output variables are mentioned in [Project 1 AI report]().
+A detailed description of our implementation, and the input and output variables are mentioned in [Project 1 AI report](Coast-Guard/AI Project 1 Report.pdf).
 ### Example run
 
 Generate a random grid input using ```String generatedGrid = costGuard.genGrid()```. The dimensions of the grid, the locations of
