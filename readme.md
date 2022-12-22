@@ -612,18 +612,14 @@ version of the Coast Guard agent using prolog. This agent reasons using the situ
 
 - ```goal(S)``` query is used to get one possible solution (path) to the goal. To get more possible paths, input ```;```.
     <details>
-    <summary> Query: <code> goal(S). </code> </summary>
-      <code>  
-      S = result(drop, result(up, result(left, result(pickup, result(down, result(right, result(drop, result(left, result(pickup, result(down, result(right, s0)))))))))))
-      </code>  
+    <summary> Query: <code>goal(S).</code> </summary>
+      <code>S = result(drop, result(up, result(left, result(pickup, result(down, result(right, result(drop, result(left, result(pickup, result(down, result(right, s0)))))))))))</code>  
       </details>
 
 - You could also ask if a following goal path is true:
     <details>
     <summary> Query:
-    <code> 
-    goal(result(drop, result(up, result(left, result(pickup, result(down, result(right, result(drop, result(left, result(pickup, result(down, result(right, s0)))))))))))).
-    </code>  
+    <code>goal(result(drop, result(up, result(left, result(pickup, result(down, result(right, result(drop, result(left, result(pickup, result(down, result(right, s0)))))))))))).</code>  
     </summary>
     true.
     </details>
