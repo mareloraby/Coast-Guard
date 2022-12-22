@@ -1,4 +1,4 @@
-> This repository holds our solutions for the coast guard problem of the Introduction to CSEN901 Artificial Intelligence course winter 2022
+> This repository holds our solutions for the coast guard problem of the CSEN901 Introduction to Artificial Intelligence course - Winter 2022
 
 
                                                    v  ~.      v
