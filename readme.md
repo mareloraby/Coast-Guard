@@ -18,14 +18,14 @@ It is represented in our implementation as follows: griddims; maxCapacity; locat
 
 ## Project 1 
 
-> The first project was implemented in Java.  The generic search procedure was implemented: where it takes a problem and a search strategy as inputs.
-> The search strategies included:
-> - BFS
-> - DFS
-> - IDS
-> - UC
-> - Greedy with two different heuristics.
-> - A* with two different heuristics.
+The first project was implemented in Java.  The generic search procedure was implemented: where it takes a problem and a search strategy as inputs.
+ The search strategies included:
+ - BFS
+ - DFS
+ - IDS
+ - UC
+ - Greedy with two different heuristics.
+ - A* with two different heuristics.
  
 A detailed description of our implementation, and the input and output variables are mentioned in [Project 1 AI report](https://github.com/mareloraby/Coast-Guard/blob/master/AI%20Project%201%20Report.pdf).
 ### Example run
