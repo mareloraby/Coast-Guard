@@ -1,5 +1,14 @@
 > This repository holds our solutions for the coast guard problem of the Introduction to CSEN901 Artificial Intelligence course winter 2022
 
+
+                                                   v  ~.      v
+                                          v           /|
+                                                     / |          v
+                                              v     /__|__
+                                                  \--------/
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                
+
 # Coast Guard Problem
 
 A coast guard is in charge of a rescue boat that goes into the sea to rescue other sinking ships. When rescuing a ship, they need to rescue any living people on it and to retrieve its black box after there are no more passengers thereon to rescue. If a ship sinks completely, it becomes a wreck and they still have to retrieve the black box before it is damaged. Each ship loses one passenger every time step. Additionally, each black box incurs an additional damage point every time
