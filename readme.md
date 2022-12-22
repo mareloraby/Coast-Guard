@@ -36,18 +36,26 @@ The first project was implemented in Java.  The generic search procedure was imp
  - Greedy with two different heuristics.
  - A* with two different heuristics.
  
-A detailed description of our implementation, and the input and output variables are mentioned in [Project 1 AI report](https://github.com/mareloraby/Coast-Guard/blob/master/AI%20Project%201%20Report.pdf).
+A detailed description of our implementation, and the input and output parameters are mentioned in [Project 1 AI report](https://github.com/mareloraby/Coast-Guard/blob/master/AI%20Project%201%20Report.pdf).
 ### Example run
 
-Generate a random grid input using ```String generatedGrid = costGuard.genGrid()```. The dimensions of the grid, the locations of
-the coast guard, stations, ships, number of passengers for each ship and the coast
-guard capacity are all randomly generated.
-call ```costGuard.solve(generatedGrid,"BF",true);``` to solve the problem using BF.
-
-You could also pass your example grid as follows:
+In [src/code/Main.java](src/code/Main.java),
+generate a random grid input using ```costGuard.genGrid()```. The dimensions of the grid, the locations of
+the coast guard, stations, ships, number of passengers for each ship, and the coast
+guard capacity are all randomly generated. 
+Uncomment (remove ```\\```) these lines, choose desired strategy and run Main.java:
 ```
-String grid = "6,7;82;1,4;2,3;1,1,58,3,0,58,4,2,72;"; // an example of a grid input
-costGuard.solve(grid,"BF",true);
+System.out.println("Randomly initialized grid: "); 
+String generatedGrid = coastGuard.genGrid(); 
+coastGuard.solve(generatedGrid,"BF",true);
+```
+
+You could also pass your grid as input in the place of ```generatedGrid```, as follows:
+```
+System.out.println("User generated grid: ");
+String gridExample1 = "6,7;82;1,4;2,3;1,1,58,3,0,58,4,2,72;";
+String gridExample2 = "5,6;50;0,1;0,4,3,3;1,1,90;";
+coastGuard.solve(gridExample1,"BF",true);
 ```
 
 <details>
