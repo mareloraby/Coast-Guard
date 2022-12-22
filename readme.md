@@ -10,7 +10,7 @@ This could be defined as a search problem as follows:
 
 - Initial State: Coast guard, ships and stations are at random locations within the grid boundaries. Each ship has a random number of passengers p onboard, where  $0 < p <= 100$ . There are no wrecks, and no two items are in the same cell.
 
-- State Space: Each state represents grid dimensions, maximum number of passengers the coast guard rescue boat can carry, current coast guard location, current locations of all stations, current locations of all ships and number of remaining passengers on each ship, current locations of all wrecks and the counter number of each black box, current remaining capacity in the coast guard rescue boat, remaining passengers on the grid, remaining ships on the grid, remaining wrecks on the grid, dead passengers so far, retrieved boxes so far and the lost boxes so far.  \\
+- State Space: Each state represents grid dimensions, maximum number of passengers the coast guard rescue boat can carry, current coast guard location, current locations of all stations, current locations of all ships and number of remaining passengers on each ship, current locations of all wrecks and the counter number of each black box, current remaining capacity in the coast guard rescue boat, remaining passengers on the grid, remaining ships on the grid, remaining wrecks on the grid, dead passengers so far, retrieved boxes so far and the lost boxes so far.
 It is represented in our implementation as follows: griddims; maxCapacity; location of coast guard; locations of stations; locations of ships and \# of passengers on each ship; locations of wrecks and the current damage; remaining cg capacity; \# remaining ships; \# remaining boxes; \# dead passengers ; \# retrieved boxes; \# lost boxes.
   
 - Goal Test: No living passengers on grid. No passengers on rescue boat. No unretrieved undamaged boxes.
@@ -43,8 +43,6 @@ costGuard.solve(grid,"BF",true);
 
 <details>
 	<summary> Output  </summary>
-``` 
-```
 
 ```
 Initial State: 6,7;82;4,1;3,2;1,1,58,0,3,58,2,4,72;$;82;188;3;0;0;0;0
@@ -594,5 +592,40 @@ Result: DOWN,DOWN,DOWN,LEFT,LEFT,PICKUP,UP,UP,RIGHT,DROP,DOWN,LEFT,LEFT,LEFT,PIC
 
 <hr>
 
-# Project 2 
+# Project 2  
+In [Project 2](/SuccessorState) we implemented a simplified logic-based
+version of the Coast Guard agent using prolog. This agent reasons using the situation calculus.
+
+**The following simplifying assumptions were made:**
+
+- There are no black boxes to retrieve.
+
+- There is only one station and a maximum of two ships.
+
+- Each ship has exactly one passenger who does not expire with time.
+
+- The agent’s capacity can be either 1 or 2.
+
+- The grid size is 3 X 3 or 4 X 4.
+
+### Example run:
+
+- ```goal(S)``` query is used to get one possible solution (path) to the goal. To get more possible paths, input ```;```.
+    <details>
+    <summary> Query: <code> goal(S). </code> </summary>
+      <code>  
+      S = result(drop, result(up, result(left, result(pickup, result(down, result(right, result(drop, result(left, result(pickup, result(down, result(right, s0)))))))))))
+      </code>  
+      </details>
+
+- You could also ask if a following goal path is true:
+    <details>
+    <summary> Query:
+    <code> 
+    goal(result(drop, result(up, result(left, result(pickup, result(down, result(right, result(drop, result(left, result(pickup, result(down, result(right, s0)))))))))))).
+    </code>  
+    </summary>
+    true.
+    </details>
+
 
